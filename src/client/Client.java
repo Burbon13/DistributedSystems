@@ -10,6 +10,7 @@ import rental.CarType;
 import rental.ICarRentalCompany;
 import rental.Quote;
 import rental.Reservation;
+import rental.ReservationConstraints;
 
 public class Client extends AbstractTestBooking {
 
@@ -81,8 +82,7 @@ public class Client extends AbstractTestBooking {
 	@Override
 	protected Quote createQuote(String clientName, Date start, Date end, String carType, String region)
 			throws Exception {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("TODO");
+		return carRentalCompany.createQuote(new ReservationConstraints(start, end, carType, region), clientName);
 	}
 
 	/**
@@ -95,8 +95,7 @@ public class Client extends AbstractTestBooking {
 	 */
 	@Override
 	protected Reservation confirmQuote(Quote quote) throws Exception {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("TODO");
+		return carRentalCompany.confirmQuote(quote);
 	}
 
 	/**
@@ -109,8 +108,7 @@ public class Client extends AbstractTestBooking {
 	 */
 	@Override
 	protected List<Reservation> getReservationsByRenter(String clientName) throws Exception {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("TODO");
+		return carRentalCompany.getReservationsByRenter(clientName);
 	}
 
 	/**
@@ -123,7 +121,6 @@ public class Client extends AbstractTestBooking {
 	 */
 	@Override
 	protected int getNumberOfReservationsForCarType(String carType) throws Exception {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("TODO");
+		return carRentalCompany.getNumberOfReservationsForCarType(carType);
 	}
 }

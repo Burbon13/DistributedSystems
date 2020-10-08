@@ -1,5 +1,6 @@
 package rental;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,7 +11,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.rmi.RemoteException;
 
 
 public class CarRentalCompany implements ICarRentalCompany {
@@ -158,7 +158,35 @@ public class CarRentalCompany implements ICarRentalCompany {
 		car.addReservation(res);
 		return res;
 	}
+	
+	public List<Reservation> getReservationsByRenter(String clientName) {
+		List<Reservation> reservations = new ArrayList<>();
+		
+		for(Car car: cars) {
+			for(Reservation reservation: car.getReservations()) {
+				if (reservation.getCarRenter().equals(clientName)) {
+					reservations.add(reservation);
+				}
+			}
+		}
+		
+		return reservations;
+	}
 
+	public int getNumberOfReservationsForCarType(String carType) {
+		int total = 0;
+		
+		for(Car car: cars) {
+			for(Reservation reservation: car.getReservations()) {
+				if (reservation.getCarType().equals(carType)) {
+					total ++;
+				}
+			}
+		}
+		
+		return total;
+	}
+	
 	public void cancelReservation(Reservation res) {
 		logger.log(Level.INFO, "<{0}> Cancelling reservation {1}", new Object[]{name, res.toString()});
 		getCar(res.getCarId()).removeReservation(res);

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.invoke.MethodHandles;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
@@ -12,11 +13,16 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 public class RentalServer {
 	
 	private final static int LOCAL = 0;
 	private final static int REMOTE = 1;
+	private final static Logger LOGGER = Logger.getLogger(RentalServer.class.getName());
+	private final static String REMOTE_SERVER_CLASS = "CarRentalCompany";
 
 	public static void main(String[] args) throws ReservationException,
 			NumberFormatException, IOException {
@@ -24,21 +30,33 @@ public class RentalServer {
 		// The first argument passed to the `main` method (if present)
 		// indicates whether the application is run on the remote setup or not.
 		int localOrRemote = (args.length == 1 && args[0].equals("REMOTE")) ? REMOTE : LOCAL;
-
-		CrcData data  = loadData("hertz.csv");
 		
-		// Starting the RMI thingy
+		if(localOrRemote == REMOTE) {
+			throw new UnsupportedOperationException("Remote implementation not available");
+		}
+
+		CrcData data = loadData("hertz.csv");
+		ICarRentalCompany carRentalCompany = new CarRentalCompany(data.name, data.regions, data.cars);
+		
+		// Locate RMI registry
+		Registry registry = null;
 		try {
-			ICarRentalCompany carRentalCompany = new CarRentalCompany(data.name, data.regions, data.cars);
-			ICarRentalCompany stub = (ICarRentalCompany) UnicastRemoteObject.exportObject(carRentalCompany, 0);
-			Registry registry = LocateRegistry.getRegistry();
-			registry.rebind("CarRentalCompany", stub);
-			System.out.println("Server ready!");
-		} catch(Exception e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace();
+			registry = LocateRegistry.getRegistry();
+		} catch(RemoteException e) {
+			LOGGER.log(Level.SEVERE, "Could not locate RMI registry");
+			System.exit(-1);
 		}
 		
+		ICarRentalCompany stub;
+		try {
+			stub = (ICarRentalCompany) UnicastRemoteObject.exportObject(carRentalCompany, 0);
+			registry.rebind(REMOTE_SERVER_CLASS, stub);
+		} catch (RemoteException e) {
+			LOGGER.log(Level.SEVERE, "Could not rebind {0}", REMOTE_SERVER_CLASS);
+			System.exit(-1);
+		}
+		
+		LOGGER.log(Level.INFO, "Server ready");
 	}
 
 	public static CrcData loadData(String datafile)

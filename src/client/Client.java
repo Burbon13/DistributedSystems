@@ -1,14 +1,19 @@
 package client;
 
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import rental.CarType;
 import rental.ICarRentalCompany;
 import rental.Quote;
+import rental.RentalServer;
 import rental.Reservation;
 import rental.ReservationConstraints;
 
@@ -21,6 +26,8 @@ public class Client extends AbstractTestBooking {
 	private final static int LOCAL = 0;
 	private final static int REMOTE = 1;
 	private ICarRentalCompany carRentalCompany;
+	private final static Logger LOGGER = Logger.getLogger(RentalServer.class.getName());
+	private final static String REMOTE_SERVER_CLASS = "CarRentalCompany";
 	
 	/**
 	 * The `main` method is used to launch the client application and run the test
@@ -31,15 +38,34 @@ public class Client extends AbstractTestBooking {
 		// The first argument passed to the `main` method (if present)
 		// indicates whether the application is run on the remote setup or not.
 		int localOrRemote = (args.length == 1 && args[0].equals("REMOTE")) ? REMOTE : LOCAL;
-
-		String carRentalCompanyName = "Hertz";
-
-		// An example reservation scenario on car rental company 'Hertz' would be...
 		
-		Registry registry = LocateRegistry.getRegistry();
-		ICarRentalCompany carRentalCompany = (ICarRentalCompany) registry.lookup("CarRentalCompany");
-		Client client = new Client("simpleTrips", carRentalCompanyName, localOrRemote, carRentalCompany);
-		client.run();
+		if(localOrRemote == REMOTE) {
+			throw new UnsupportedOperationException("Remote implementation not available");
+		}
+		
+		// Locate RMI registry
+		Registry registry = null;
+		try {
+			registry = LocateRegistry.getRegistry();
+		} catch(RemoteException e) {
+			LOGGER.log(Level.SEVERE, "Could not locate RMI registry");
+			System.exit(-1);
+		}
+		
+		try {
+			ICarRentalCompany carRentalCompany = (ICarRentalCompany) registry.lookup(REMOTE_SERVER_CLASS);
+			LOGGER.log(Level.INFO, "Found remote refference to {0}", REMOTE_SERVER_CLASS);
+			// An example reservation scenario on car rental company 'Hertz' would be...
+			String carRentalCompanyName = "Hertz";
+			Client client = new Client("simpleTrips", carRentalCompanyName, localOrRemote, carRentalCompany);
+			client.run();
+		} catch(NotBoundException e) {
+			LOGGER.log(Level.SEVERE, "Cound not find remote class {0}", REMOTE_SERVER_CLASS);
+			System.exit(-1);
+		} catch (RemoteException e) {
+			LOGGER.log(Level.SEVERE, "Remote error: {0}", e.getMessage());
+			System.exit(-1);
+		}
 	}
 
 	/***************

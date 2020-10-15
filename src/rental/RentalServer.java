@@ -23,17 +23,14 @@ public class RentalServer {
 	private final static int REMOTE = 1;
 	private final static Logger LOGGER = Logger.getLogger(RentalServer.class.getName());
 	private final static String REMOTE_SERVER_CLASS = "CarRentalCompany";
+	private final static String REMOTE_ADDRESS = "10.10.10.13";
+	private final static int REMOTE_PORT = 54321;
 
 	public static void main(String[] args) throws ReservationException,
 			NumberFormatException, IOException {
-		System.setSecurityManager(null);
 		// The first argument passed to the `main` method (if present)
 		// indicates whether the application is run on the remote setup or not.
 		int localOrRemote = (args.length == 1 && args[0].equals("REMOTE")) ? REMOTE : LOCAL;
-		
-		if(localOrRemote == REMOTE) {
-			throw new UnsupportedOperationException("Remote implementation not available");
-		}
 
 		CrcData data = loadData("hertz.csv");
 		ICarRentalCompany carRentalCompany = new CarRentalCompany(data.name, data.regions, data.cars);
@@ -41,7 +38,17 @@ public class RentalServer {
 		// Locate RMI registry
 		Registry registry = null;
 		try {
-			registry = LocateRegistry.getRegistry();
+			if(localOrRemote == REMOTE) {
+				LOGGER.log(
+						Level.INFO, 
+						"Server running remote on address {0} port {1}", 
+						new Object[]{REMOTE_ADDRESS, REMOTE_PORT});
+				registry = LocateRegistry.getRegistry(REMOTE_ADDRESS, REMOTE_PORT);
+			} else {
+				LOGGER.info("Server running localy");
+				System.setSecurityManager(null); // Throws some security exception if called when the server is REMOTE
+				registry = LocateRegistry.getRegistry();
+			}
 		} catch(RemoteException e) {
 			LOGGER.log(Level.SEVERE, "Could not locate RMI registry");
 			System.exit(-1);

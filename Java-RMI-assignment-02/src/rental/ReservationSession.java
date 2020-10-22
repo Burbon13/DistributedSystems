@@ -1,19 +1,21 @@
 package rental;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ReservationSession implements Serializable {
 	private String clientName;
+	
+	ReservationSession(String clientName) {
+		this.clientName = clientName;
+	}
 	
 	public String getClientName() {
 		return clientName;
 	}
 
 	public void setClientName(String clientName) {
-		this.clientName = clientName;
-	}
-
-	ReservationSession(String clientName) {
 		this.clientName = clientName;
 	}
 

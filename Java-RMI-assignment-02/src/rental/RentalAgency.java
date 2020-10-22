@@ -2,6 +2,7 @@ package rental;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,12 +10,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import rental.RentalAgencyServer.CrcData;
+
 public class RentalAgency implements IAgency {
 	// TODO: do we need to store sessions??   Set of sessions, throw Exception if not saved
 	private Map<String, ICarRentalCompany> carRentalCompanies; // Transform this into Map
 	private Map<ReservationSession, List<Quote>> quotesBySession;
+	private Set<ManagerSession> managerSessions;
 	
-	RentalAgency(List<ICarRentalCompany> carRentalCompanies) {
+	RentalAgency(List<ICarRentalCompany> carRentalCompanies) {		
+		// Auto CRC registration
 		this.carRentalCompanies = new HashMap<>();
 		for(ICarRentalCompany company: carRentalCompanies) {
 			this.carRentalCompanies.put(company.getName(), company);
@@ -22,6 +27,17 @@ public class RentalAgency implements IAgency {
 		this.quotesBySession = new HashMap<>();
 	}
 
+
+	@Override
+	public void endReservationSession(ReservationSession session) throws RemoteException {
+		quotesBySession.remove(session);
+	}
+
+	@Override
+	public void endManagerSession(ManagerSession session) throws RemoteException {
+		managerSessions.remove(session);
+	}
+	
 	@Override
 	synchronized public ReservationSession getNewReservationSession(String clientName) throws RemoteException {
 		ReservationSession newReservationSession = new ReservationSession(clientName);
@@ -32,6 +48,7 @@ public class RentalAgency implements IAgency {
 	@Override
 	synchronized public ManagerSession getNewManagerSession(String clientName) throws RemoteException {
 		ManagerSession newManagerSession = new ManagerSession(clientName);
+		managerSessions.add(newManagerSession);
 		return newManagerSession;
 	}
 
@@ -170,5 +187,29 @@ public class RentalAgency implements IAgency {
 			}
 		}
 		return bestCarType;
+	}
+
+
+	@Override
+	public void registerCRC(ManagerSession managerSession, String crcName) throws RemoteException {
+		try {
+			CrcData dockxData = RentalAgencyServer.loadData(crcName);
+			ICarRentalCompany company = new CarRentalCompany(dockxData.name, dockxData.regions, dockxData.cars);
+			carRentalCompanies.put(crcName, company);
+		} catch(Exception e) {
+			System.out.println("Error occurred: " + e.getMessage());
+		}
+	}
+
+
+	@Override
+	public void unregisterCRC(ManagerSession managerSession, String crcName) throws RemoteException {
+		carRentalCompanies.remove(crcName);
+	}
+
+
+	@Override
+	public Collection<ICarRentalCompany> getRegisteredCRC(ManagerSession managerSession) throws RemoteException {
+		return carRentalCompanies.values();
 	}
 }

@@ -2,6 +2,7 @@ package rental;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -9,7 +10,11 @@ import java.util.Set;
 public interface IAgency extends Remote{
 	ReservationSession getNewReservationSession(String clientName) throws RemoteException;
 	
+	void endReservationSession(ReservationSession session) throws RemoteException;
+	
 	ManagerSession getNewManagerSession(String clientName) throws RemoteException;
+	
+	void endManagerSession(ManagerSession session) throws RemoteException;
 	
 	Set<CarType> checkForAvailableCarTypes(ReservationSession session, Date start, Date end) throws RemoteException;
 	
@@ -28,4 +33,10 @@ public interface IAgency extends Remote{
 	List<String> getBestCustomers(ManagerSession managerSession) throws RemoteException;
 	
 	CarType getMostPopularCarType(ManagerSession managerSession, String carRentalCompany, int year) throws RemoteException;
+	
+	void registerCRC(ManagerSession managerSession, String crcName) throws RemoteException;
+	
+	void unregisterCRC(ManagerSession managerSession, String crcName) throws RemoteException;
+	
+	Collection<ICarRentalCompany> getRegisteredCRC(ManagerSession managerSession) throws RemoteException;
 }

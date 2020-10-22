@@ -17,7 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-public class RentalAgencyServer implements IAgency{
+public class RentalAgencyServer {
 	
 	private final static int LOCAL = 0;
 	private final static int REMOTE = 1;

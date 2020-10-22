@@ -200,6 +200,20 @@ public class CarRentalCompany implements ICarRentalCompany {
 		return total;
 	}
 	
+	public int getNumberOfReservationsForCarType(String carType, int year) {
+		int total = 0;
+		
+		for(Car car: cars) {
+			for(Reservation reservation: car.getReservations()) {
+				if (reservation.getCarType().equals(carType) && reservation.getStartDate().getYear() + 1900 == year) {
+					total ++;
+				}
+			}
+		}
+		
+		return total;
+	}
+	
 	public List<Reservation> getReservationsForCarType(String carType) {
 		List<Reservation> reservationList = new ArrayList<>();
 		for(Car car: cars) {

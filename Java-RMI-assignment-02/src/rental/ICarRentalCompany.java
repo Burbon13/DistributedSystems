@@ -95,6 +95,8 @@ public interface ICarRentalCompany {
 	 */
 	int getNumberOfReservationsForCarType(String carType);
 	
+	int getNumberOfReservationsForCarType(String carType, int year);
+	
 	String getName();
 	
 	List<String> getRegions();

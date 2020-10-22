@@ -24,11 +24,12 @@ public class Client extends AbstractTestManagement<ReservationSession, ManagerSe
 
 	private final static int LOCAL = 0;
 	private final static int REMOTE = 1;
-	private IAgency carAgencyServer;
 	private final static Logger LOGGER = Logger.getLogger(Client.class.getName());
 	private final static String REMOTE_SERVER_CLASS = "RentalAgencyServer";
 	private final static String REMOTE_ADDRESS = "10.10.10.13";
 	private final static int REMOTE_PORT = 54321;
+	
+	private IAgency carAgencyServer;
 	
 	/**
 	 * The `main` method is used to launch the client application and run the test

@@ -20,7 +20,7 @@ public interface IAgency extends Remote{
 	
 	void addQuoteToSession(ReservationSession session, String name, Date start, Date end, String carType, String region) throws RemoteException, ReservationException;
 	
-	List<Reservation> confirmQuotes(ReservationSession session, String name) throws RemoteException;
+	List<Reservation> confirmQuotes(ReservationSession session, String name) throws RemoteException, ReservationException ;
 	
 	List<Quote> getCurrentQuotes(ReservationSession session) throws RemoteException;
 	

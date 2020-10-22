@@ -13,8 +13,8 @@ import java.util.Set;
 import rental.RentalAgencyServer.CrcData;
 
 public class RentalAgency implements IAgency {
-	// TODO: do we need to store sessions??   Set of sessions, throw Exception if not saved
-	private Map<String, ICarRentalCompany> carRentalCompanies; // Transform this into Map
+	
+	private Map<String, ICarRentalCompany> carRentalCompanies;
 	private Map<ReservationSession, List<Quote>> quotesBySession;
 	private Set<ManagerSession> managerSessions;
 	
@@ -25,6 +25,7 @@ public class RentalAgency implements IAgency {
 			this.carRentalCompanies.put(company.getName(), company);
 		}
 		this.quotesBySession = new HashMap<>();
+		this.managerSessions = new HashSet<>();
 	}
 
 
@@ -78,7 +79,7 @@ public class RentalAgency implements IAgency {
 	}
 
 	@Override
-	synchronized public List<Reservation> confirmQuotes(ReservationSession session, String name) throws RemoteException {
+	synchronized public List<Reservation> confirmQuotes(ReservationSession session, String name) throws RemoteException, ReservationException {
 		List<Reservation> reservations = new ArrayList<>();
 		try {
 			for(Quote quote: quotesBySession.get(session)) {
@@ -90,6 +91,7 @@ public class RentalAgency implements IAgency {
 				String companyName = reservation.getRentalCompany();
 				carRentalCompanies.get(companyName).cancelReservation(reservation);
 			}
+			throw e;
 		}
 		return reservations;
 	}

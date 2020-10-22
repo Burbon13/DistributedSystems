@@ -138,7 +138,7 @@ public class RentalAgency implements IAgency {
 	}
 
 	@Override
-	synchronized public List<String> getBestCustomers(ManagerSession managerSession) throws RemoteException {
+	synchronized public Set<String> getBestCustomers(ManagerSession managerSession) throws RemoteException {
 		Map<String, Integer> customers = new HashMap<>();
 		
 		for(ICarRentalCompany company: carRentalCompanies.values()) {
@@ -153,12 +153,12 @@ public class RentalAgency implements IAgency {
 		}
 		
 		int maximum = -1;
-		List<String> bestCustomers = new ArrayList<>();
+		Set<String> bestCustomers = new HashSet<>();
 		for(String customer: customers.keySet()) {
 			int nrOfRevs = customers.get(customer);
 			if (nrOfRevs > maximum) {
 				maximum = nrOfRevs;
-				bestCustomers = new ArrayList<String>();
+				bestCustomers = new HashSet<>();
 				bestCustomers.add(customer);
 			} else if(nrOfRevs == maximum) {
 				bestCustomers.add(customer);

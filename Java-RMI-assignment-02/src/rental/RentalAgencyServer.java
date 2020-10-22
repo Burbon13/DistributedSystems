@@ -38,6 +38,8 @@ public class RentalAgencyServer {
 		CrcData dockxData = loadData("dockx.csv");
 		ICarRentalCompany dockxCompany = new CarRentalCompany(dockxData.name, dockxData.regions, dockxData.cars);
 		
+		IAgency agency = new RentalAgency(Arrays.asList(new ICarRentalCompany[]{hertzCompany, dockxCompany}));
+		
 		// Locate RMI registry
 		Registry registry = null;
 		try {
@@ -57,9 +59,9 @@ public class RentalAgencyServer {
 			System.exit(-1);
 		}
 		
-		ICarRentalCompany stub;
+		IAgency stub;
 		try {
-			stub = (ICarRentalCompany) UnicastRemoteObject.exportObject(carRentalCompany, 0);
+			stub = (IAgency) UnicastRemoteObject.exportObject(agency, 0);
 			registry.rebind(REMOTE_SERVER_CLASS, stub);
 		} catch (RemoteException e) {
 			LOGGER.log(Level.SEVERE, "Could not rebind {0}", REMOTE_SERVER_CLASS);

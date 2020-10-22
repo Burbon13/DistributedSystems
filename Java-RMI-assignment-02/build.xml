@@ -17,7 +17,7 @@
 	<property name="client.package" value="client" />  <!-- Client package --> 
 	<property name="client.mainClass" value="Client" />  <!-- Main class of client package (contains client `main` method) -->
 	<property name="server.package" value="rental" />  <!-- Server package --> 
-	<property name="server.mainClass" value="RentalServer" />  <!-- Main class of server package (contains client `main` method) -->
+	<property name="server.mainClass" value="RentalAgencyServer" />  <!-- Main class of server package (contains client `main` method) -->
 	
 	<property name="zip.filename" value="rmi2.ADDFIRSTNAME.ADDLASTNAME" />  <!-- Name of zip file -->
 

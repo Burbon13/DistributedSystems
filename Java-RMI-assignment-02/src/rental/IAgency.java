@@ -30,7 +30,7 @@ public interface IAgency extends Remote{
 	
 	int getNumberOfReservationsForCarType(ManagerSession managerSession, String carRentalName, String carType) throws RemoteException;
 	
-	List<String> getBestCustomers(ManagerSession managerSession) throws RemoteException;
+	Set<String> getBestCustomers(ManagerSession managerSession) throws RemoteException;
 	
 	CarType getMostPopularCarType(ManagerSession managerSession, String carRentalCompany, int year) throws RemoteException;
 	

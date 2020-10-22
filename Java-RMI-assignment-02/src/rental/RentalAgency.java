@@ -176,13 +176,7 @@ public class RentalAgency implements IAgency {
 		int maximum = -1;
 		CarType bestCarType = null;
 		for(CarType carType: company.getAllCarTypes()) {
-			int counter = 0;
-			List<Reservation> reservationList = company.getReservationsForCarType(carType.getName());
-			for(Reservation reservation: reservationList) {
-				if(reservation.getStartDate().getYear() == year) {
-					counter ++;
-				}
-			}
+			int counter =  company.getNumberOfReservationsForCarType(carType.getName());
 			if(counter > maximum) {
 				maximum = counter;
 				bestCarType = carType;

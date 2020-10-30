@@ -2,6 +2,7 @@ package client;
 
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.naming.InitialContext;
 import rental.CarType;
@@ -14,6 +15,7 @@ public class Main extends AbstractTestAgency<ReservationSessionRemote, ManagerSe
     
     //@EJB
     //static ReservationSessionRemote reservationSession;
+    private static Logger LOGGER = Logger.getLogger(Main.class.getName());
     
     /**
      * @param args the command line arguments
@@ -34,12 +36,14 @@ public class Main extends AbstractTestAgency<ReservationSessionRemote, ManagerSe
 
     @Override
     protected ReservationSessionRemote getNewReservationSession(String name) throws Exception {
+        LOGGER.info("Retrieving new reservation session");
         InitialContext context = new InitialContext();
         return (ReservationSessionRemote) context.lookup(ReservationSessionRemote.class.getName());
     }
 
     @Override
     protected ManagerSessionRemote getNewManagerSession(String name) throws Exception {
+        LOGGER.info("Retrieving new manager session");
         InitialContext context = new InitialContext();
         return (ManagerSessionRemote) context.lookup(ManagerSessionRemote.class.getName());
     }
@@ -63,14 +67,11 @@ public class Main extends AbstractTestAgency<ReservationSessionRemote, ManagerSe
 
     @Override
     protected int getNumberOfReservationsBy(ManagerSessionRemote ms, String clientName) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return ms.getNumberOfReservationsBy(clientName);
     }
 
     @Override
     protected int getNumberOfReservationsForCarType(ManagerSessionRemote ms, String carRentalName, String carType) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    
-   
+        return ms.getNumberOfReservationsForCarType(carRentalName, carType);
+    } 
 }

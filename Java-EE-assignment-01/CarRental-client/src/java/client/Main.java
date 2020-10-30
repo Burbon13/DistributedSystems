@@ -58,7 +58,7 @@ public class Main extends AbstractTestAgency<ReservationSessionRemote, ManagerSe
 
     @Override
     protected List<Reservation> confirmQuotes(ReservationSessionRemote session, String name) throws Exception {
-        session.confirmQuotes(name);
+        return session.confirmQuotes(name);
     }
 
     @Override

@@ -8,25 +8,25 @@ import rental.Car;
 import rental.RentalStore;
 
 
-@DeclareRoles("manager")
+@DeclareRoles("carManager")
 @Stateless
 public class ManagerSession implements ManagerSessionRemote {
 
     @Override
-    @RolesAllowed("manager")
+    @RolesAllowed("carManager")
     public int getNumberOfReservationsForCarType(String carRentalName, String carType) {
         int total = 0;
         List<Car> cars = RentalStore.getRental(carRentalName).getCars();
         for(Car car: cars) {
-            if(car.getType().toString().equals(carType)) {
-                total ++;
+            if(car.getType().getName().equals(carType)) {
+                total += car.getAllReservations().size();
             }
         }
        return total;
     }
 
     @Override
-    @RolesAllowed("manager")
+    @RolesAllowed("carManager")
     public int getNumberOfReservationsBy(String clientName) {
         int total = 0;
         for(String crc: RentalStore.getRentals().keySet()) {

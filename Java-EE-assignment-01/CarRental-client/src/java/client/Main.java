@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.naming.InitialContext;
 import rental.CarType;
+import rental.Quote;
 import rental.Reservation;
 import session.ReservationSessionRemote;
 import session.ManagerSessionRemote;
@@ -63,6 +64,12 @@ public class Main extends AbstractTestAgency<ReservationSessionRemote, ManagerSe
     @Override
     protected List<Reservation> confirmQuotes(ReservationSessionRemote session, String name) throws Exception {
         return session.confirmQuotes(name);
+    }
+    
+    public void getCurrentQuotes(ReservationSessionRemote session) {
+        for(Quote quote: session.getCurrentQuotes()) {
+            System.out.println(quote);
+        }
     }
 
     @Override

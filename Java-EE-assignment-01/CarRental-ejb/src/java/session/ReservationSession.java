@@ -48,19 +48,25 @@ public class ReservationSession implements ReservationSessionRemote {
             throw new Exception("Unable to create quote"); 
         }
     }
+    
+    @Override
+    public List<Quote> getCurrentQuotes() {
+        return quotes;
+    }
 
     @Override
-    public List<Reservation> confirmQuotes(String name) {
+    public List<Reservation> confirmQuotes(String name) throws Exception {
         List<Reservation> tempReservations = new ArrayList<>();
         try {
             for(Quote quote: quotes) {
                 Reservation newReservation = RentalStore.getRental(quote.getRentalCompany()).confirmQuote(quote);
                 tempReservations.add(newReservation);
             }
-        } catch(Exception ignored) {
+        } catch(Exception e) {
             for(Reservation reservation: tempReservations) {
                 RentalStore.getRental(reservation.getRentalCompany()).cancelReservation(reservation);
             }
+            throw e;
         }
         return tempReservations;
     }

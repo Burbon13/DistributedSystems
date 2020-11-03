@@ -758,10 +758,8 @@ exists or setup the property manually. For example like this:
             -->
     <target name="-check-main-class">
         <fail>
-                                            Main class must be set. Go to CarRental-client project properties -&gt; Run and set the main class there.
-                    
-            
-            <condition>
+                    Main class must be set. Go to CarRental-client project properties -&gt; Run and set the main class there.
+                    <condition>
                 <not>
                     <or>
                         <isset property="dist.ear.dir"/>

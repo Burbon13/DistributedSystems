@@ -19,7 +19,7 @@
 	<property name="server.package" value="rental" />  <!-- Server package --> 
 	<property name="server.mainClass" value="RentalServer" />  <!-- Main class of server package (contains client `main` method) -->
 	
-	<property name="zip.filename" value="rmi1.RAZVAN.ROATIS" />  <!-- Name of zip file -->
+	<property name="zip.filename" value="rmi1.SURNAME.NAME" />  <!-- Name of zip file -->
 
 	<!--
     *************************************************************
@@ -27,8 +27,8 @@
 	   using the remote setup to test your application.	   
     ************************************************************* -->
 	
-	<property name="remote.username" value="rmi013" />  <!-- Remote server: username -->
-	<property name="remote.password" value="KHAS8ZTW2ZV4" />  <!-- Remote server: password -->
+	<property name="remote.username" value="USERNAME" />  <!-- Remote server: username -->
+	<property name="remote.password" value="PASSWORD" />  <!-- Remote server: password -->
 
 	<property name="remote.startRegistry" value="true" />  <!-- Remote server: start RMI registry or not -->
 	<property name="remote.registryPort" value="54321" />  <!-- Remote server: on which port to start RMI registry -->

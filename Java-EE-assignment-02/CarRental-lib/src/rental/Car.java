@@ -8,6 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import rental.CarType;
+import rental.Reservation;
 
 @Entity
 public class Car implements Serializable {

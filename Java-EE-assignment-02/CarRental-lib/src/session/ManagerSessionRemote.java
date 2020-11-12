@@ -1,9 +1,10 @@
 package session;
 
+import java.util.List;
 import java.util.Set;
 import javax.ejb.Remote;
 import rental.CarType;
-import rental.Reservation;
+import rental.CarRentalCompany;
 
 @Remote
 public interface ManagerSessionRemote {
@@ -16,4 +17,5 @@ public interface ManagerSessionRemote {
     
     public int getNumberOfReservations(String company, String type);
       
+    public void addCarRentalCompany(List<CarRentalCompany> companies);
 }

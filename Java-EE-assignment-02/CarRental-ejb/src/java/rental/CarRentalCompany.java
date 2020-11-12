@@ -1,5 +1,6 @@
 package rental;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -8,19 +9,28 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
-public class CarRentalCompany {
+@Entity
+public class CarRentalCompany implements Serializable {
 
     private static Logger logger = Logger.getLogger(CarRentalCompany.class.getName());
+    
     private String name;
     private List<Car> cars;
     private Set<CarType> carTypes = new HashSet<CarType>();
-	private List<String> regions;
+    private List<String> regions;
 
 	
     /***************
      * CONSTRUCTOR *
      ***************/
+    
+    public CarRentalCompany() {
+        
+    }
 
     public CarRentalCompany(String name, List<String> regions, List<Car> cars) {
         logger.log(Level.INFO, "<{0}> Starting up CRC {0} ...", name);
@@ -36,6 +46,7 @@ public class CarRentalCompany {
      * NAME *
      ********/
     
+    @Id
     public String getName() {
         return name;
     }
@@ -99,9 +110,14 @@ public class CarRentalCompany {
         throw new IllegalArgumentException("<" + name + "> No car with uid " + uid);
     }
 
+    @OneToMany
+    public List<Car> getCars() {
+        return cars;
+    }
+    
     public Set<Car> getCars(CarType type) {
         Set<Car> out = new HashSet<Car>();
-        for (Car car : cars) {
+        for (Car car : getCars()) {
             if (car.getType().equals(type)) {
                 out.add(car);
             }
@@ -111,7 +127,7 @@ public class CarRentalCompany {
     
      public Set<Car> getCars(String type) {
         Set<Car> out = new HashSet<Car>();
-        for (Car car : cars) {
+        for (Car car : getCars()) {
             if (type.equals(car.getType().getName())) {
                 out.add(car);
             }
@@ -121,7 +137,7 @@ public class CarRentalCompany {
 
     private List<Car> getAvailableCars(String carType, Date start, Date end) {
         List<Car> availableCars = new LinkedList<Car>();
-        for (Car car : cars) {
+        for (Car car : getCars()) {
             if (car.getType().getName().equals(carType) && car.isAvailable(start, end)) {
                 availableCars.add(car);
             }

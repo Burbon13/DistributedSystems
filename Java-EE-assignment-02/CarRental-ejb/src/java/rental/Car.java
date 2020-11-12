@@ -1,10 +1,16 @@
 package rental;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
-public class Car {
+@Entity
+public class Car implements Serializable {
 
     private int id;
     private CarType type;
@@ -13,6 +19,10 @@ public class Car {
     /***************
      * CONSTRUCTOR *
      ***************/
+    
+    public Car() {
+        
+    }
     
     public Car(int uid, CarType type) {
     	this.id = uid;
@@ -24,6 +34,7 @@ public class Car {
      * ID *
      ******/
     
+    @Id
     public int getId() {
     	return id;
     }
@@ -32,13 +43,14 @@ public class Car {
      * CAR TYPE *
      ************/
     
+    @ManyToOne
     public CarType getType() {
         return type;
     }
-	
-	public void setType(CarType type) {
-		this.type = type;
-	}
+
+    public void setType(CarType type) {
+	this.type = type;
+    }
     /****************
      * RESERVATIONS *
      ****************/
@@ -64,6 +76,7 @@ public class Car {
         reservations.remove(reservation);
     }
 
+    @OneToMany
     public Set<Reservation> getReservations() {
         return reservations;
     }

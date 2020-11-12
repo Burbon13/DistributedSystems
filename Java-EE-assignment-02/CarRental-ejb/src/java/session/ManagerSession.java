@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.security.DeclareRoles;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -15,12 +17,14 @@ import rental.RentalStore;
 import rental.Reservation;
 
 @Stateless
+@DeclareRoles("carManager")
 public class ManagerSession implements ManagerSessionRemote {
     
     @PersistenceContext
     EntityManager em;
     
     @Override
+    @RolesAllowed("carManager")
     public Set<CarType> getCarTypes(String company) {
         List<CarType> results = em.createQuery("SELECT carType FROM CarRentalCompany company WHERE company = :companyName")
                 .setParameter("companyName", company)
@@ -29,6 +33,7 @@ public class ManagerSession implements ManagerSessionRemote {
     }
 
     @Override
+    @RolesAllowed("carManager")
     public Set<Integer> getCarIds(String company, String type) {
         List<Integer> results = em.createQuery("SELECT c.id FROM CarRentalCompany company WHERE company = :companyName AND CarType = :carType")
                 .setParameter("companyName", company)
@@ -38,6 +43,7 @@ public class ManagerSession implements ManagerSessionRemote {
     }
 
     @Override
+    @RolesAllowed("carManager")
     public int getNumberOfReservations(String company, String type, int id) {
         List<Integer> results = em.createQuery("SELECT COUNT(r) FROM Car car, Company c WHERE c.name = :companyName AND c.id = :carId")
                 .setParameter("carId", id)
@@ -47,6 +53,7 @@ public class ManagerSession implements ManagerSessionRemote {
     }
 
     @Override
+    @RolesAllowed("carManager")
     public int getNumberOfReservations(String company, String type) {
         List<Integer> results = em.createQuery("SELECT COUNT(r) FROM Car car, Company c WHERE c.name = :companyName AND c.carType = :type")
                 .setParameter("carType", type)
@@ -56,6 +63,7 @@ public class ManagerSession implements ManagerSessionRemote {
     }
 
     @Override
+    @RolesAllowed("carManager")
     public void addCarRentalCompany(List<CarRentalCompany> companies) {
         for(CarRentalCompany company: companies) {
             em.persist(company);

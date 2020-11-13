@@ -45,7 +45,7 @@ public class Main extends AbstractTestManagement<ReservationSessionRemote, Manag
     @Override
     protected String getCheapestCarType(ReservationSessionRemote session, Date start, Date end, String region) throws Exception {
         logger.log(Level.INFO, "[CLIENT] Retrieving cheapest car type");
-        return session.getCheaestCarType(start, end, region);
+        return session.getCheapestCarType(start, end, region);
     }
 
     @Override

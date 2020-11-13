@@ -13,20 +13,20 @@ import rental.ReservationException;
 @Remote
 public interface ReservationSessionRemote {
     
-    public void setRenterName(String name);
+    public void setRenterName(String name) throws Exception;
     
-    public String getRenterName();
+    public String getRenterName() throws Exception;
     
-    public Set<String> getAllRentalCompanies();
+    public Set<String> getAllRentalCompanies() throws Exception;
     
-    public List<CarType> getAvailableCarTypes(Date start, Date end);
+    public List<CarType> getAvailableCarTypes(Date start, Date end) throws Exception;
     
-    public Quote createQuote(String company, ReservationConstraints constraints) throws ReservationException;
+    public Quote createQuote(String company, ReservationConstraints constraints) throws ReservationException, Exception;
     
-    public List<Quote> getCurrentQuotes();
+    public List<Quote> getCurrentQuotes() throws Exception;
     
-    public List<Reservation> confirmQuotes() throws ReservationException;
+    public List<Reservation> confirmQuotes() throws ReservationException, Exception;
     
-    public String getCheaestCarType(Date start, Date end, String region);
+    public String getCheapestCarType(Date start, Date end, String region) throws Exception;
     
 }

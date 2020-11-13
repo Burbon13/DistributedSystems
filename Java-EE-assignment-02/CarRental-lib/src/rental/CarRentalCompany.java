@@ -56,14 +56,14 @@ public class CarRentalCompany implements Serializable {
         return name;
     }
 
-    private void setName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
     /***********
      * Regions *
      **********/
-    private void setRegions(List<String> regions) {
+    public void setRegions(List<String> regions) {
         this.regions = regions;
     }
     
@@ -75,7 +75,8 @@ public class CarRentalCompany implements Serializable {
      * CAR TYPES *
      *************/
     
-    public Collection<CarType> getAllTypes() {
+    @OneToMany
+    public Collection<CarType> getCarTypes() {
         return carTypes;
     }
 

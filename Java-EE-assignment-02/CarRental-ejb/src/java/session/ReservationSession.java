@@ -93,6 +93,20 @@ public class ReservationSession implements ReservationSessionRemote {
 
     @Override
     public String getCheaestCarType(Date start, Date end, String region) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        TypedQuery<CarRentalCompany> query = em.createQuery("SELECT crc FROM CarRentalCompany crc", CarRentalCompany.class);
+        List<CarRentalCompany> rentals = query.getResultList();
+        double smallestPrice = -1;
+        String cheapestCT = "";
+        for(CarRentalCompany crc: rentals) {
+            if (crc.getRegions().contains(region)) {
+                for(CarType ct : crc.getAvailableCarTypes(start, end)) {
+                    if (smallestPrice == -1  || ct.getRentalPricePerDay() < smallestPrice) {
+                        smallestPrice = ct.getRentalPricePerDay();
+                        cheapestCT = ct.getName();
+                    }
+                }
+            }
+        }
+        return cheapestCT;
     }
 }

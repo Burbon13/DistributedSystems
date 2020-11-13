@@ -59,15 +59,15 @@ public class ManagerSession implements ManagerSessionRemote {
     @Override
     @RolesAllowed("carManager")
     public int getNumberOfReservations(String company, String type) {
-        TypedQuery<Integer> query = em.createQuery(""
+        TypedQuery<Long> query = em.createQuery(""
                 + "SELECT COUNT(r) "
                 + "FROM CarRentalCompany crc "
                 + "INNER JOIN crc.cars c "
                 + "INNER JOIN c.reservations r "
-                + "WHERE crc.name = :companyName AND c.type = :carType", Integer.class)
+                + "WHERE crc.name = :companyName AND c.type.name = :carType", Long.class)
                 .setParameter("carType", type)
                 .setParameter("companyName", company);
-        return query.getSingleResult();
+        return query.getSingleResult().intValue();
     }
 
     @Override

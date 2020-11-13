@@ -3,6 +3,8 @@ package session;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.security.DeclareRoles;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
@@ -12,9 +14,12 @@ import javax.persistence.TypedQuery;
 import rental.CarRentalCompany;
 import rental.CarType;
 
+
 @Stateless
 @DeclareRoles("carManager")
 public class ManagerSession implements ManagerSessionRemote {
+    
+    private static final Logger logger = Logger.getLogger(ManagerSession.class.getName());
     
     @PersistenceContext
     EntityManager em;
@@ -73,8 +78,10 @@ public class ManagerSession implements ManagerSessionRemote {
     @Override
     @RolesAllowed("carManager")
     public void addCarRentalCompany(List<CarRentalCompany> companies) {
+        logger.log(Level.INFO, "Persisting multiple car companies");
         // TODO: ADD LOCK FOR LOADING
         for(CarRentalCompany company: companies) {
+            logger.log(Level.INFO, "Persisting company {0}", company.getName());
             em.persist(company);
         }
     }

@@ -76,7 +76,7 @@ public class CarRentalCompany implements Serializable {
      * CAR TYPES *
      *************/
     
-    @OneToMany
+    @Transient
     public Set<CarType> getCarTypes() {
         return carTypes;
     }

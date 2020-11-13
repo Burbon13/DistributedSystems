@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 import rental.CarType;
 import rental.Quote;
 import rental.Reservation;
@@ -76,8 +77,12 @@ public class CarRentalCompany implements Serializable {
      *************/
     
     @OneToMany
-    public Collection<CarType> getCarTypes() {
+    public Set<CarType> getCarTypes() {
         return carTypes;
+    }
+    
+    public void setCarTypes(Set<CarType> carTypes) {
+        this.carTypes = carTypes;
     }
 
     public CarType getType(String carTypeName) {

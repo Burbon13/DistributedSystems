@@ -6,6 +6,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import javax.ejb.Stateful;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import rental.CarRentalCompany;
 import rental.CarType;
 import rental.Quote;
 import rental.RentalStore;
@@ -15,20 +19,27 @@ import rental.ReservationException;
 
 @Stateful
 public class ReservationSession implements ReservationSessionRemote {
+    
+    @PersistenceContext
+    EntityManager em;
 
     private String renter;
     private List<Quote> quotes = new LinkedList<Quote>();
 
     @Override
     public Set<String> getAllRentalCompanies() {
-        return new HashSet<String>(RentalStore.getRentals().keySet());
+        List<String> companies = em.createQuery("SELECT c.name FROM CarRentalCompany c")
+                .getResultList();
+        return new HashSet<>(companies);
     }
     
     @Override
     public List<CarType> getAvailableCarTypes(Date start, Date end) {
-        List<CarType> availableCarTypes = new LinkedList<CarType>();
-        for(String crc : getAllRentalCompanies()) {
-            for(CarType ct : RentalStore.getRentals().get(crc).getAvailableCarTypes(start, end)) {
+        List<CarType> availableCarTypes = new LinkedList<>();
+        TypedQuery<CarRentalCompany> query = em.createQuery("SELECT crc FROM CarRentalCompany crc", CarRentalCompany.class);
+        List<CarRentalCompany> rentals = query.getResultList();
+        for(CarRentalCompany crc: rentals) {
+            for(CarType ct : crc.getAvailableCarTypes(start, end)) {
                 if(!availableCarTypes.contains(ct))
                     availableCarTypes.add(ct);
             }
@@ -54,14 +65,14 @@ public class ReservationSession implements ReservationSessionRemote {
 
     @Override
     public List<Reservation> confirmQuotes() throws ReservationException {
-        List<Reservation> done = new LinkedList<Reservation>();
+        List<Reservation> done = new LinkedList<>();
         try {
             for (Quote quote : quotes) {
-                done.add(RentalStore.getRental(quote.getRentalCompany()).confirmQuote(quote));
+                CarRentalCompany crc = em.find(CarRentalCompany.class, quote.getRentalCompany());
+                done.add(crc.confirmQuote(quote));
             }
         } catch (Exception e) {
-            for(Reservation r:done)
-                RentalStore.getRental(r.getRentalCompany()).cancelReservation(r);
+            // TODO: Rollback
             throw new ReservationException(e);
         }
         return done;
@@ -78,5 +89,10 @@ public class ReservationSession implements ReservationSessionRemote {
     @Override
     public String getRenterName() {
         return renter;
+    }
+
+    @Override
+    public String getCheaestCarType(Date start, Date end, String region) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

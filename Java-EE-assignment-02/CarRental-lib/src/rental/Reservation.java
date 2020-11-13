@@ -1,5 +1,9 @@
 package rental;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
 public class Reservation extends Quote {
 
     private int carId;
@@ -7,6 +11,10 @@ public class Reservation extends Quote {
     /***************
      * CONSTRUCTOR *
      ***************/
+    
+    public Reservation() {
+        
+    }
 
     public Reservation(Quote quote, int carId) {
     	super(quote.getCarRenter(), quote.getStartDate(), quote.getEndDate(), 
@@ -18,8 +26,13 @@ public class Reservation extends Quote {
      * ID *
      ******/
     
+    @Id
     public int getCarId() {
     	return carId;
+    }
+    
+    public void setCarId(int carId) {
+        this.carId = carId;
     }
     
     /*************

@@ -120,6 +120,10 @@ public class CarRentalCompany implements Serializable {
         return cars;
     }
     
+    public void setCars(List<Car> cars) {
+        this.cars = cars;
+    }
+    
     public Set<Car> getCars(CarType type) {
         Set<Car> out = new HashSet<Car>();
         for (Car car : getCars()) {

@@ -41,6 +41,10 @@ public class Car implements Serializable {
     	return id;
     }
     
+    void setId(int id) {
+        this.id = id;
+    }
+    
     /************
      * CAR TYPE *
      ************/
@@ -81,5 +85,9 @@ public class Car implements Serializable {
     @OneToMany
     public Set<Reservation> getReservations() {
         return reservations;
+    }
+    
+    public void setReservations(Set<Reservation> reservations) {
+        this.reservations = reservations;
     }
 }

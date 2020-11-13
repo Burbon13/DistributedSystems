@@ -33,7 +33,7 @@ public class Main extends AbstractTestManagement<ReservationSessionRemote, Manag
     public static void main(String[] args) throws Exception {        
         final String scriptFile = "trips1";
         logger.log(Level.INFO, "Running file {0}", new Object[]{scriptFile});
-        new Main("trips1").loadCarRentalCompanies().run();
+        new Main("trips1").loadCarRentalCompanies();
     }
 
     @Override

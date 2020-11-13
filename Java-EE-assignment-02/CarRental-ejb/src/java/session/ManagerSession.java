@@ -26,7 +26,8 @@ public class ManagerSession implements ManagerSessionRemote {
     
     @Override
     @RolesAllowed("carManager")
-    public Set<CarType> getCarTypes(String company) {
+    public Set<CarType> getCarTypes(String company) throws Exception{
+        logger.log(Level.INFO, "Retrieving car types for company {0}", company);
         List<CarType> results = em.createQuery(""
                 + "SELECT ct.name "
                 + "FROM CarRentalCompany crc "
@@ -39,7 +40,8 @@ public class ManagerSession implements ManagerSessionRemote {
 
     @Override
     @RolesAllowed("carManager")
-    public Set<Integer> getCarIds(String company, String type) {
+    public Set<Integer> getCarIds(String company, String type) throws Exception{
+        logger.log(Level.INFO, "Getting car ids for comany {0} and type {1}", new Object[]{company, type});
         List<Integer> results = em.createQuery(""
                 + "SELECT c.id "
                 + "FROM CarRentalCompany crc "
@@ -63,7 +65,8 @@ public class ManagerSession implements ManagerSessionRemote {
 
     @Override
     @RolesAllowed("carManager")
-    public int getNumberOfReservations(String company, String type) {
+    public int getNumberOfReservations(String company, String type) throws Exception{
+        logger.log(Level.INFO, "Getting number of reservations for company {0} and type {1}", new Object[]{company, type});
         TypedQuery<Long> query = em.createQuery(""
                 + "SELECT COUNT(r) "
                 + "FROM CarRentalCompany crc "
@@ -77,8 +80,8 @@ public class ManagerSession implements ManagerSessionRemote {
 
     @Override
     @RolesAllowed("carManager")
-    public void addCarRentalCompany(List<CarRentalCompany> companies) {
-        logger.log(Level.INFO, "Persisting multiple car companies");
+    public void addCarRentalCompany(List<CarRentalCompany> companies) throws Exception{
+        logger.log(Level.INFO, "Adding rental companieS");
         // TODO: ADD LOCK FOR LOADING
         for(CarRentalCompany company: companies) {
             logger.log(Level.INFO, "Persisting company {0}", company.getName());
@@ -87,20 +90,23 @@ public class ManagerSession implements ManagerSessionRemote {
     }
 
     @Override
-    public Set<String> getBestClients() {
+    public Set<String> getBestClients() throws Exception{
         // TODO
+        logger.log(Level.INFO, "Retrieving best clients");
         return new HashSet<>();
     }
 
     @Override
-    public CarType getMostPopularCarTypeIn(String carRentalCompanyName, int year) {
+    public CarType getMostPopularCarTypeIn(String carRentalCompanyName, int year) throws Exception{
         // TODO
+        logger.log(Level.INFO, "Get most popular car type in {0}", carRentalCompanyName);
         return null;
     }
 
-    @Override
-    public int getNumberOfReservationsBy(String clientName) {
+        @Override
+    public int getNumberOfReservationsBy(String clientName) throws Exception{
         // TODO
+        logger.log(Level.INFO, "Getting number of reservations by {0}", clientName);
         return 0;
     }
 }

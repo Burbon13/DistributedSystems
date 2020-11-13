@@ -9,19 +9,19 @@ import rental.CarRentalCompany;
 @Remote
 public interface ManagerSessionRemote {
     
-    public Set<CarType> getCarTypes(String company);
+    public Set<CarType> getCarTypes(String company) throws Exception;
     
-    public Set<Integer> getCarIds(String company,String type);
+    public Set<Integer> getCarIds(String company,String type) throws Exception;
     
     // public int getNumberOfReservations(String company, String type, int carId);
     
-    public int getNumberOfReservations(String company, String type);
+    public int getNumberOfReservations(String company, String type) throws Exception;
       
-    public void addCarRentalCompany(List<CarRentalCompany> companies);
+    public void addCarRentalCompany(List<CarRentalCompany> companies) throws Exception;
     
-    public Set<String> getBestClients();
+    public Set<String> getBestClients() throws Exception;
     
-    public CarType getMostPopularCarTypeIn(String carRentalCompanyName, int year);
+    public CarType getMostPopularCarTypeIn(String carRentalCompanyName, int year) throws Exception;
     
-    public int getNumberOfReservationsBy(String clientName);
+    public int getNumberOfReservationsBy(String clientName) throws Exception;
 }

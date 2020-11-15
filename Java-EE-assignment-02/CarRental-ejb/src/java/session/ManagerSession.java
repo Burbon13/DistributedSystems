@@ -34,7 +34,9 @@ public class ManagerSession implements ManagerSessionRemote {
         CarRentalCompany hertz = loadRental("hertz.csv");
         LOG.info("Loading docks");
         CarRentalCompany dockx = loadRental("dockx.csv");
-        
+        LOG.info("Persisting companies");
+        em.persist(hertz);
+        em.persist(dockx);
         LOG.info("Companuies loaded!");
     }
     

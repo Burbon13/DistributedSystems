@@ -8,24 +8,20 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static javax.persistence.CascadeType.PERSIST;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
-import rental.CarType;
-import rental.Quote;
-import rental.Reservation;
-import rental.ReservationConstraints;
-import rental.ReservationException;
 
 @Entity
 public class CarRentalCompany implements Serializable {
 
-    private static Logger logger = Logger.getLogger(CarRentalCompany.class.getName());
+    private static Logger LOG = Logger.getLogger(CarRentalCompany.class.getName());
     
     private String name;
     private List<Car> cars;
-    private Set<CarType> carTypes = new HashSet<CarType>();
+    private Set<CarType> carTypes = new HashSet<>();
     private List<String> regions;
 
 	
@@ -38,10 +34,10 @@ public class CarRentalCompany implements Serializable {
     }
 
     public CarRentalCompany(String name, List<String> regions, List<Car> cars) {
-        logger.log(Level.INFO, "<{0}> Starting up CRC {0} ...", name);
-        setName(name);
+        LOG.log(Level.INFO, "<{0}> Starting up CRC {0} ...", name);
+        this.name = name;
         this.cars = cars;
-        setRegions(regions);
+        this.regions = regions;
         for (Car car : cars) {
             carTypes.add(car.getType());
         }
@@ -63,6 +59,7 @@ public class CarRentalCompany implements Serializable {
     /***********
      * Regions *
      **********/
+    
     public void setRegions(List<String> regions) {
         this.regions = regions;
     }
@@ -93,7 +90,7 @@ public class CarRentalCompany implements Serializable {
     }
 
     public boolean isAvailable(String carTypeName, Date start, Date end) {
-        logger.log(Level.INFO, "<{0}> Checking availability for car type {1}", new Object[]{name, carTypeName});
+        LOG.log(Level.INFO, "<{0}> Checking availability for car type {1}", new Object[]{name, carTypeName});
         return getAvailableCarTypes(start, end).contains(getType(carTypeName));
     }
 
@@ -120,7 +117,7 @@ public class CarRentalCompany implements Serializable {
         throw new IllegalArgumentException("<" + name + "> No car with uid " + uid);
     }
 
-    @OneToMany
+    @OneToMany(cascade=PERSIST)
     public List<Car> getCars() {
         return cars;
     }
@@ -165,7 +162,7 @@ public class CarRentalCompany implements Serializable {
     
     public Quote createQuote(ReservationConstraints constraints, String guest)
             throws ReservationException {
-        logger.log(Level.INFO, "<{0}> Creating tentative reservation for {1} with constraints {2}",
+        LOG.log(Level.INFO, "<{0}> Creating tentative reservation for {1} with constraints {2}",
                 new Object[]{name, guest, constraints.toString()});
 
 
@@ -188,7 +185,7 @@ public class CarRentalCompany implements Serializable {
     }
 
     public Reservation confirmQuote(Quote quote) throws ReservationException {
-        logger.log(Level.INFO, "<{0}> Reservation of {1}", new Object[]{name, quote.toString()});
+        LOG.log(Level.INFO, "<{0}> Reservation of {1}", new Object[]{name, quote.toString()});
         List<Car> availableCars = getAvailableCars(quote.getCarType(), quote.getStartDate(), quote.getEndDate());
         if (availableCars.isEmpty()) {
             throw new ReservationException("Reservation failed, all cars of type " + quote.getCarType()
@@ -202,12 +199,12 @@ public class CarRentalCompany implements Serializable {
     }
 
     public void cancelReservation(Reservation res) {
-        logger.log(Level.INFO, "<{0}> Cancelling reservation {1}", new Object[]{name, res.toString()});
+        LOG.log(Level.INFO, "<{0}> Cancelling reservation {1}", new Object[]{name, res.toString()});
         getCar(res.getCarId()).removeReservation(res);
     }
     
     public Set<Reservation> getReservationsBy(String renter) {
-        logger.log(Level.INFO, "<{0}> Retrieving reservations by {1}", new Object[]{name, renter});
+        LOG.log(Level.INFO, "<{0}> Retrieving reservations by {1}", new Object[]{name, renter});
         Set<Reservation> out = new HashSet<Reservation>();
         for(Car c : cars) {
             for(Reservation r : c.getReservations()) {

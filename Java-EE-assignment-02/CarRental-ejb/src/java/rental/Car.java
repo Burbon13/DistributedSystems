@@ -4,14 +4,12 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import static javax.persistence.CascadeType.PERSIST;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import rental.CarType;
-import rental.CarType;
-import rental.Reservation;
-import rental.Reservation;
 
 @Entity
 public class Car implements Serializable {
@@ -28,8 +26,7 @@ public class Car implements Serializable {
         
     }
     
-    public Car(int uid, CarType type) {
-    	this.id = uid;
+    public Car(CarType type) {
         this.type = type;
         this.reservations = new HashSet<Reservation>();
     }
@@ -39,6 +36,7 @@ public class Car implements Serializable {
      ******/
     
     @Id
+    @GeneratedValue
     public int getId() {
     	return id;
     }
@@ -51,7 +49,7 @@ public class Car implements Serializable {
      * CAR TYPE *
      ************/
     
-    @ManyToOne
+    @ManyToOne(cascade=PERSIST)
     public CarType getType() {
         return type;
     }

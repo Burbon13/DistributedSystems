@@ -42,7 +42,7 @@ public class RentalStore {
 
         CrcData out = new CrcData();
         StringTokenizer csvReader;
-        int nextuid = 0;
+        //int nextuid = 0;
        
         //open file from jar
         BufferedReader in = new BufferedReader(new InputStreamReader(RentalStore.class.getClassLoader().getResourceAsStream(datafile)));
@@ -67,7 +67,7 @@ public class RentalStore {
                             Boolean.parseBoolean(csvReader.nextToken()));
                     //create N new cars with given type, where N is the 5th field
                     for (int i = Integer.parseInt(csvReader.nextToken()); i > 0; i--) {
-                        out.cars.add(new Car(nextuid++, type));
+                        out.cars.add(new Car(type));
                     }        
                 }
             } 

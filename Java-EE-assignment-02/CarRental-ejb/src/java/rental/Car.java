@@ -9,6 +9,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import rental.CarType;
+import rental.CarType;
+import rental.Reservation;
 import rental.Reservation;
 
 @Entity

@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import javax.ejb.Remote;
+import rental.A;
 import rental.CarType;
 import rental.Quote;
 import rental.Reservation;
@@ -28,5 +29,17 @@ public interface ReservationSessionRemote {
     public List<Reservation> confirmQuotes() throws ReservationException, Exception;
     
     public String getCheapestCarType(Date start, Date end, String region) throws Exception;
+    
+    // =============== TESTING PURPOSES FOR RMI ERRORS ===============
+    
+    public void reveiveA(A a) throws Exception;
+    
+    public void receiveSetOfA(Set<A> setA) throws Exception;
+    
+    public A sendA(String name) throws Exception;
+    
+    public void receiveSetOfString(Set<String> setString) throws Exception;
+    
+    public Set<A> sendSetA() throws Exception;
     
 }

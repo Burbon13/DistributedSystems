@@ -107,9 +107,19 @@ public class ManagerSession implements ManagerSessionRemote {
     @Override
     @RolesAllowed("carManager")
     public CarType getMostPopularCarTypeIn(String carRentalCompanyName, int year) throws Exception{
-        // TODO
-        LOG.log(Level.INFO, "Get most popular car type in {0}", carRentalCompanyName);
-        return null;
+        LOG.log(Level.INFO, "Retrieving most popular car type {0} {1}", new Object[]{carRentalCompanyName, year});
+        List<CarType> carTypes = em.createQuery(""
+            + "SELECT c.type AS ctype "
+            + "FROM CarRentalCompany crc "
+            + "INNER JOIN crc.cars c "
+            + "INNER JOIN c.reservations r "
+            + "WHERE crc.name = :companyName AND EXTRACT(YEAR FROM r.startDate) = :definedYear "
+            + "GROUP BY c.type "
+            + "ORDER BY COUNT(r) DESC ", CarType.class)
+            .setParameter("companyName", carRentalCompanyName)
+            .setParameter("definedYear", year)
+            .getResultList();
+        return carTypes.get(0);
     }
 
     @Override
@@ -117,6 +127,13 @@ public class ManagerSession implements ManagerSessionRemote {
     public int getNumberOfReservationsBy(String clientName) throws Exception{
         // TODO
         LOG.log(Level.INFO, "Getting number of reservations by {0}", clientName);
-        return 0;
+        TypedQuery<Long> query = em.createQuery(""
+                + "SELECT COUNT(r) "
+                + "FROM CarRentalCompany crc "
+                + "INNER JOIN crc.cars c "
+                + "INNER JOIN c.reservations r "
+                + "WHERE r.carRenter = :client", Long.class)
+                .setParameter("client", clientName);
+        return query.getSingleResult().intValue();
     }
 }

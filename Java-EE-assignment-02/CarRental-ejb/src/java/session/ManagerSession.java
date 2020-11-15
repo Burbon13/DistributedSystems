@@ -12,6 +12,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import rental.CarType;
+import rental.CarRentalCompany;
+import static rental.RentalStore.loadRental;
 
 
 @Stateless
@@ -28,6 +30,12 @@ public class ManagerSession implements ManagerSessionRemote {
     @RolesAllowed("carManager")
     public void loadCarRentalCompanies(/*List<CarRentalCompany> companies*/) throws Exception{
         LOG.info("Loading car rental companies");
+        LOG.info("Loading hertz");
+        CarRentalCompany hertz = loadRental("hertz.csv");
+        LOG.info("Loading docks");
+        CarRentalCompany dockx = loadRental("dockx.csv");
+        
+        LOG.info("Companuies loaded!");
     }
     
     @Override

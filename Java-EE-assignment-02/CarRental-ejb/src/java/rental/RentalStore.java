@@ -4,16 +4,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class RentalStore {
 
+    /*
     private static Map<String, CarRentalCompany> rentals;
 
     public static CarRentalCompany getRental(String company) {
@@ -32,22 +29,15 @@ public class RentalStore {
         }
         return rentals;
     }
+    */
 
-    public static void loadRental(String datafile) {
-        try {
-            CrcData data = loadData(datafile);
-            CarRentalCompany company = new CarRentalCompany(data.name, data.regions, data.cars);
-            rentals.put(data.name, company);
-            Logger.getLogger(RentalStore.class.getName()).log(Level.INFO, "Loaded {0} from file {1}", new Object[]{data.name, datafile});
-        } catch (NumberFormatException ex) {
-            Logger.getLogger(RentalStore.class.getName()).log(Level.SEVERE, "bad file", ex);
-        } catch (IOException ex) {
-            Logger.getLogger(RentalStore.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
+    public static CarRentalCompany loadRental(String datafile) throws IOException {
+        CrcData data = loadData(datafile);
+        CarRentalCompany company = new CarRentalCompany(data.name, data.regions, data.cars);
+        return company;
     }
 
-    public static CrcData loadData(String datafile)
+    private static CrcData loadData(String datafile)
             throws NumberFormatException, IOException {
 
         CrcData out = new CrcData();

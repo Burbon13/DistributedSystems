@@ -1,7 +1,6 @@
 package rental;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -14,14 +13,9 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import rental.CarType;
-import rental.CarType;
-import rental.Quote;
 import rental.Quote;
 import rental.Reservation;
-import rental.Reservation;
 import rental.ReservationConstraints;
-import rental.ReservationConstraints;
-import rental.ReservationException;
 import rental.ReservationException;
 
 @Entity

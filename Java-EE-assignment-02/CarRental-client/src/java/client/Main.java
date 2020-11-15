@@ -1,16 +1,9 @@
 package client;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.InitialContext;
@@ -32,7 +25,7 @@ public class Main extends AbstractTestManagement<ReservationSessionRemote, Manag
     public static void main(String[] args) throws Exception {        
         final String scriptFile = "trips";
         LOG.log(Level.INFO, "Running script {0}", scriptFile);
-        new Main("trips").loadCarRentalCompanies().run();
+        new Main("trips").loadCarRentalCompanies();
     }
 
     @Override

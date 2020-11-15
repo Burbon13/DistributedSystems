@@ -54,10 +54,15 @@ public class ReservationSession implements ReservationSessionRemote {
     }
 
     @Override
-    public Quote createQuote(String company, ReservationConstraints constraints) throws ReservationException, Exception {
+    public Quote createQuote(String name, ReservationConstraints constraints) throws ReservationException, Exception {
+        /*
         LOG.log(Level.INFO, "Creating quote for company {0}", company);
         try {
             CarRentalCompany crc = em.find(CarRentalCompany.class, company);
+            if (crc == null) {
+                LOG.log(Level.WARNING, "Company {0} was not found", company);
+                throw new ReservationException("Company " + company + " was not found");
+            }
             Quote out = crc.createQuote(constraints, renter);
             quotes.add(out);
             LOG.log(Level.INFO, "Created quote for company {0}", company);
@@ -66,6 +71,18 @@ public class ReservationSession implements ReservationSessionRemote {
             LOG.log(Level.WARNING, "Exception occurred on creating quote: {0}", e.getMessage());
             throw new ReservationException(e);
         }
+        */
+        List<CarRentalCompany> companies = em.createQuery("SELECT crc FROM CarRentalCompany crc", CarRentalCompany.class).getResultList();
+        for(CarRentalCompany company: companies) {
+            try {
+                Quote createdQuote = company.createQuote(constraints, name);
+                quotes.add(createdQuote);
+                return createdQuote;
+            } catch(Exception ignored) {
+                LOG.info("Could not create quote: " + ignored.getMessage());
+            }
+        }
+        throw new ReservationException("Unable to create quote"); 
     }
 
     @Override

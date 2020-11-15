@@ -25,7 +25,7 @@ public class Main extends AbstractTestManagement<ReservationSessionRemote, Manag
     public static void main(String[] args) throws Exception {        
         final String scriptFile = "trips";
         LOG.log(Level.INFO, "Running script {0}", scriptFile);
-        new Main("trips").loadCarRentalCompanies();
+        new Main("trips").loadCarRentalCompanies().run();
     }
 
     @Override
@@ -70,9 +70,9 @@ public class Main extends AbstractTestManagement<ReservationSessionRemote, Manag
     }
 
     @Override
-    protected void createQuote(ReservationSessionRemote session, String name, Date start, Date end, String carType, String region) throws Exception {
+    protected void createQuote(ReservationSessionRemote session, String company, Date start, Date end, String carType, String region) throws Exception {
         LOG.log(Level.INFO, "[CLIENT] Creating quote");
-        session.createQuote(region, new ReservationConstraints(start, end, carType, region));
+        session.createQuote(company, new ReservationConstraints(start, end, carType, region));
     }
 
     @Override

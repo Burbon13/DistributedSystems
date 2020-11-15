@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import static javax.persistence.CascadeType.PERSIST;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
@@ -117,13 +118,16 @@ public class CarRentalCompany implements Serializable {
         throw new IllegalArgumentException("<" + name + "> No car with uid " + uid);
     }
 
-    @OneToMany(cascade=PERSIST)
+    @OneToMany(cascade=PERSIST, fetch = FetchType.EAGER)
     public List<Car> getCars() {
         return cars;
     }
     
     public void setCars(List<Car> cars) {
         this.cars = cars;
+        for (Car car : cars) {
+            carTypes.add(car.getType());
+        }
     }
     
     public Set<Car> getCars(CarType type) {
@@ -167,6 +171,7 @@ public class CarRentalCompany implements Serializable {
 
 
         if (!this.regions.contains(constraints.getRegion()) || !isAvailable(constraints.getCarType(), constraints.getStartDate(), constraints.getEndDate())) {
+            // LOG.log(Level.INFO, "<{0}> No cars available to satisfy the given constraints.", name);
             throw new ReservationException("<" + name
                     + "> No cars available to satisfy the given constraints.");
         }
@@ -174,6 +179,9 @@ public class CarRentalCompany implements Serializable {
         CarType type = getType(constraints.getCarType());
 
         double price = calculateRentalPrice(type.getRentalPricePerDay(), constraints.getStartDate(), constraints.getEndDate());
+        
+        LOG.log(Level.INFO, "<{0}> CREATED reservation for {1} with constraints {2}",
+                new Object[]{name, guest, constraints.toString()});
 
         return new Quote(guest, constraints.getStartDate(), constraints.getEndDate(), getName(), constraints.getCarType(), price);
     }

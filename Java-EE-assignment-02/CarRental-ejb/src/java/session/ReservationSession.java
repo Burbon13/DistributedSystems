@@ -80,6 +80,9 @@ public class ReservationSession implements ReservationSessionRemote {
                 return createdQuote;
             } catch(Exception ignored) {
                 LOG.info("Could not create quote: " + ignored.getMessage());
+                if(ignored.getMessage() == null) {
+                    ignored.printStackTrace();
+                }
             }
         }
         throw new ReservationException("Unable to create quote"); 

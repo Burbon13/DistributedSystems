@@ -7,6 +7,7 @@
     <class>rental.Car</class>
     <class>rental.CarType</class>
     <class>rental.Reservation</class>
+    <class>rental.Quote</class>
     <shared-cache-mode>NONE</shared-cache-mode>
     <properties>
       <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>

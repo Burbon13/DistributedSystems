@@ -2,9 +2,20 @@ package rental;
 
 import java.io.Serializable;
 import java.util.Date;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Temporal;
 
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Quote implements Serializable {
-
+    
+    private int id;
     private Date startDate;
     private Date endDate;
     private String carRenter;
@@ -29,26 +40,68 @@ public class Quote implements Serializable {
         this.rentalPrice = rentalPrice;
     }
 
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public void setCarRenter(String carRenter) {
+        this.carRenter = carRenter;
+    }
+
+    public void setRentalCompany(String rentalCompany) {
+        this.rentalCompany = rentalCompany;
+    }
+
+    public void setCarType(String carType) {
+        this.carType = carType;
+    }
+
+    public void setRentalPrice(double rentalPrice) {
+        this.rentalPrice = rentalPrice;
+    }
+    
+    @Column
+    @Temporal(javax.persistence.TemporalType.DATE)
     public Date getStartDate() {
         return startDate;
     }
 
+    @Column
+    @Temporal(javax.persistence.TemporalType.DATE)
     public Date getEndDate() {
         return endDate;
     }
 
+    @Column
     public String getCarRenter() {
         return carRenter;
     }
 
+    @Column
     public String getRentalCompany() {
         return rentalCompany;
     }
 
+    @Column
     public double getRentalPrice() {
         return rentalPrice;
     }
     
+    @Column
     public String getCarType() {
 	return carType;
     }

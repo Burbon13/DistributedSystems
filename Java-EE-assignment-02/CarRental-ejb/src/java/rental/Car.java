@@ -82,7 +82,7 @@ public class Car implements Serializable {
         reservations.remove(reservation);
     }
 
-    @OneToMany
+    @OneToMany(cascade=PERSIST)
     public Set<Reservation> getReservations() {
         return reservations;
     }

@@ -99,9 +99,25 @@ public class ManagerSession implements ManagerSessionRemote {
     @Override
     @RolesAllowed("carManager")
     public Set<String> getBestClients() throws Exception{
-        // TODO
-        LOG.log(Level.INFO, "Retrieving best clients");
-        return new HashSet<>();
+        LOG.log(Level.INFO, "Retrieving best clients!");
+         TypedQuery<Long> query1 =em.createQuery(""
+            + "SELECT COUNT(r) "
+            + "FROM CarRentalCompany crc "
+            + "INNER JOIN crc.cars c "
+            + "INNER JOIN c.reservations r "
+            + "GROUP BY r.carRenter " 
+            + "ORDER BY COUNT(r) DESC", Long.class);
+        int max = query1.getResultList().get(0).intValue();
+        List<String> query2 = em.createQuery(""
+            + "SELECT r.carRenter "
+            + "FROM CarRentalCompany crc "
+            + "INNER JOIN crc.cars c "
+            + "INNER JOIN c.reservations r "
+            + "GROUP BY r.carRenter "
+            + "HAVING COUNT(r) = :max_val")
+            .setParameter("max_val", max)
+            .getResultList();
+        return new HashSet<>(query2);
     }
 
     @Override

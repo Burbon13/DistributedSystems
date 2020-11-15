@@ -104,7 +104,7 @@ public class CarType implements Serializable{
     public int hashCode() {
         final int prime = 31;
 	int result = 1;
-	result = prime * result + ((name == null) ? 0 : name.hashCode());
+	result = prime * result + Integer.hashCode(id);
 	return result;
     }
 
@@ -117,11 +117,6 @@ public class CarType implements Serializable{
 	if (getClass() != obj.getClass())
             return false;
 	CarType other = (CarType) obj;
-	if (name == null) {
-            if (other.name != null)
-                return false;
-        } else if (!name.equals(other.name))
-            return false;
-	return true;
+	return other.getId() == this.id;
     }
 }

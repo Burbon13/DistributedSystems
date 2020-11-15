@@ -46,15 +46,27 @@ public class ReservationSession implements ReservationSessionRemote {
     @Override
     public List<CarType> getAvailableCarTypes(Date start, Date end) throws Exception {
         LOG.log(Level.INFO, "Retrieving available car types between {0} and {1}", new Object[]{start, end});
-        List<CarType> availableCarTypes = new LinkedList<>();
-        TypedQuery<CarRentalCompany> query = em.createQuery("SELECT crc FROM CarRentalCompany crc", CarRentalCompany.class);
-        List<CarRentalCompany> rentals = query.getResultList();
-        for(CarRentalCompany crc: rentals) {
-            for(CarType ct : crc.getAvailableCarTypes(start, end)) {
-                if(!availableCarTypes.contains(ct))
-                    availableCarTypes.add(ct);
-            }
-        }
+//        List<CarType> availableCarTypes = new LinkedList<>();
+//        TypedQuery<CarRentalCompany> query = em.createQuery("SELECT crc FROM CarRentalCompany crc", CarRentalCompany.class);
+//        List<CarRentalCompany> rentals = query.getResultList();
+//        for(CarRentalCompany crc: rentals) {
+//            for(CarType ct : crc.getAvailableCarTypes(start, end)) {
+//                if(!availableCarTypes.contains(ct))
+//                    availableCarTypes.add(ct);
+//            }
+//        }
+//        return availableCarTypes;
+        List<CarType> availableCarTypes = em.createQuery(""
+                + "SELECT DISTINCT c.type " 
+                + "FROM Car c " 
+                + "WHERE " 
+                + ":startDate > ALL (SELECT r.endDate FROM Reservation r WHERE r.carId = c.id AND r.endDate <= :endDate) " 
+                + "AND " 
+                + ":endDate < ALL (SELECT r.startDate FROM Reservation r WHERE r.carId = c.id AND r.endDate > :endDate) ", 
+                CarType.class)
+                .setParameter("startDate", start)
+                .setParameter("endDate", end)
+                .getResultList();
         return availableCarTypes;
     }
 

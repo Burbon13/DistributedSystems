@@ -1,7 +1,7 @@
 package rental;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 
 @Entity
 public class Reservation extends Quote {
@@ -26,7 +26,7 @@ public class Reservation extends Quote {
      * ID *
      ******/
     
-    @Id
+    @Column
     public int getCarId() {
     	return carId;
     }

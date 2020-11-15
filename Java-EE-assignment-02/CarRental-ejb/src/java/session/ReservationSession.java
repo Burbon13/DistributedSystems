@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.Resource;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateful;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -23,6 +25,9 @@ import rental.ReservationException;
 public class ReservationSession implements ReservationSessionRemote {
     
     private static final Logger LOG = Logger.getLogger(ReservationSession.class.getName());
+    
+    @Resource
+    SessionContext ctx; 
     
     @PersistenceContext
     EntityManager em;
@@ -101,11 +106,13 @@ public class ReservationSession implements ReservationSessionRemote {
         try {
             for (Quote quote : quotes) {
                 CarRentalCompany crc = em.find(CarRentalCompany.class, quote.getRentalCompany());
-                done.add(crc.confirmQuote(quote));
+                Reservation res = crc.confirmQuote(quote);
+                done.add(res);
+                em.persist(res);
             }
         } catch (Exception e) {
-            // TODO Rollback
-            LOG.log(Level.WARNING, "Exception occurred on creating quote: {0}", e.getMessage());
+            LOG.log(Level.WARNING, "ROLLBACK: Exception occurred on creating quote: {0}", e.getMessage());
+            ctx.setRollbackOnly();
             throw new ReservationException(e);
         }
         LOG.log(Level.INFO, "Confirmed quotes");

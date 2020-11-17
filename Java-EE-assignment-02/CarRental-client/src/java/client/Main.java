@@ -2,13 +2,11 @@ package client;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.InitialContext;
-import rental.A;
 import rental.CarType;
 import rental.Reservation;
 import rental.ReservationConstraints;
@@ -105,7 +103,6 @@ public class Main extends AbstractTestManagement<ReservationSessionRemote, Manag
         List<RentalLoader.CrcData> companies = RentalLoader.loadCompanies(inFiles);
         
         ManagerSessionRemote managerSession = getNewManagerSession("LoadingManager");
-        //managerSession.loadCarRentalCompanies();
         
         for(RentalLoader.CrcData company: companies) {
             LOG.log(Level.INFO, "Sending company {0}", company.name);
@@ -121,47 +118,6 @@ public class Main extends AbstractTestManagement<ReservationSessionRemote, Manag
         }
         
         LOG.info("Loaded car rental companies!");
-        return this;
-    }
-    
-    // =============== TESTING PURPOSES FOR RMI ERRORS ===============
-    
-    private Main testConnection() throws Exception {
-        LOG.info("========= TESTING CONNECTION FOR SERIALIZATION ISSUES (\"=========");
-        ReservationSessionRemote session = getNewReservationSession("razvan");
-        LOG.info("Retrieved ReservationSession");
-        session.reveiveA(new A("A-FROM-CLIENT"));
-        A a = session.sendA("A-FROM-SERVER");
-        LOG.log(Level.INFO, "Received A {0}", a.getName());
-        try {
-            HashSet<A> setA = new HashSet<>();
-            setA.add(new A("a1"));
-            setA.add(new A("a2"));
-            setA.add(new A("a3"));
-            session.receiveSetOfA(setA);
-            LOG.info("SUCCESSFULY sent set<A>");
-        } catch(Exception e) {
-            LOG.info("COULD NOT SEND set<A>" + e.getMessage());
-            //e.printStackTrace();
-        }
-        try {
-            Set<String> setString = new HashSet<>();
-            setString.add("s1");
-            setString.add("s2");
-            setString.add("s3");
-            session.receiveSetOfString(setString);
-            LOG.info("SUCCESSFULY sent set<String>");
-        } catch(Exception e) {
-            LOG.info("COULD NOT SEND set<String>");
-        }
-        try {
-            Set<A> setA = session.sendSetA();
-            LOG.info("RECEIVED set<A>");
-            setA.forEach((x) -> LOG.info(x.getName()));
-        } catch(Exception e) {
-           LOG.info("COULD NOT RECEIVE set<A>");
-        }
-        LOG.info("========= END TESTING CONNECTION FOR SERIALIZATION END =========");
         return this;
     }
 }

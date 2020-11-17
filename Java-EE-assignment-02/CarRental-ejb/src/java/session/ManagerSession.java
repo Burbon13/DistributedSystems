@@ -27,6 +27,7 @@ public class ManagerSession implements ManagerSessionRemote {
     EntityManager em;
     
     @Override
+    @RolesAllowed("carManager")
     public void initializeNewCarRentalCompany(String name, List<String> regions) throws Exception {
         LOG.log(Level.INFO, "Initializing new car rental company name=<{0}> with nr. of regions=<{1}>", new Object[]{name, regions.size()});
         CarRentalCompany newCompany = new CarRentalCompany(name, regions, new ArrayList<>());
@@ -34,27 +35,11 @@ public class ManagerSession implements ManagerSessionRemote {
     }
 
     @Override
+    @RolesAllowed("carManager")
     public void insertNewCar(String companyName, CarType carType, int nrOfCars) throws Exception {
         LOG.log(Level.INFO, "Inserting new car <{0}> in company <{1}>", new Object[]{carType, companyName});
         CarRentalCompany carRentalCompany = em.find(CarRentalCompany.class, companyName);
         carRentalCompany.addNewCar(carType, nrOfCars);
-        //em.persist(this);
-    }
-    
-    // IN SERVER MEMORY CAR RENTAL COMPANIES LOADING
-    // TODO: Commend 
-    @Override
-    @RolesAllowed("carManager")
-    public void loadCarRentalCompanies(/*List<CarRentalCompany> companies*/) throws Exception{
-        LOG.info("Loading car rental companies");
-        LOG.info("Loading hertz");
-        CarRentalCompany hertz = loadRental("hertz.csv");
-        LOG.info("Loading docks");
-        CarRentalCompany dockx = loadRental("dockx.csv");
-        LOG.info("Persisting companies");
-        em.persist(hertz);
-        em.persist(dockx);
-        LOG.info("Companuies loaded!");
     }
     
     @Override

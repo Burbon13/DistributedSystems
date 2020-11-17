@@ -20,9 +20,6 @@ public interface ManagerSessionRemote {
     // public int getNumberOfReservations(String company, String type, int carId);
     
     public int getNumberOfReservations(String company, String type) throws Exception;
-      
-    // TODO: Change to a parameterized method 
-    public void loadCarRentalCompanies(/*List<CarRentalCompany> companies*/) throws Exception;
     
     public Set<String> getBestClients() throws Exception;
     

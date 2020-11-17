@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static javax.persistence.CascadeType.PERSIST;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
@@ -65,6 +66,7 @@ public class CarRentalCompany implements Serializable {
         this.regions = regions;
     }
     
+    @ElementCollection
     public List<String> getRegions() {
         return this.regions;
     }

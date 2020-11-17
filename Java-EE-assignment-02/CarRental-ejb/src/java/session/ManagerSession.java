@@ -14,8 +14,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import rental.CarType;
 import rental.CarRentalCompany;
-import static rental.RentalStore.loadRental;
-
 
 @Stateless
 @DeclareRoles("carManager")
@@ -46,6 +44,7 @@ public class ManagerSession implements ManagerSessionRemote {
     @RolesAllowed("carManager")
     public Set<CarType> getCarTypes(String company) throws Exception{
         LOG.log(Level.INFO, "Retrieving car types for company {0}", company);
+        // TODO
         List<CarType> results = em.createQuery(""
                 + "SELECT ct.name "
                 + "FROM CarRentalCompany crc "

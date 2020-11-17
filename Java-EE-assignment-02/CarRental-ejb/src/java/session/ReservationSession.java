@@ -122,43 +122,22 @@ public class ReservationSession implements ReservationSessionRemote {
     @Override
     public String getCheapestCarType(Date start, Date end, String region) throws Exception {
         LOG.log(Level.INFO, "Retreving cheapest car type {0} {1} {2}", new Object[]{start, end, region});
-        TypedQuery<CarRentalCompany> query = em.createQuery("SELECT crc FROM CarRentalCompany crc", CarRentalCompany.class);
-        List<CarRentalCompany> rentals = query.getResultList();
-        double smallestPrice = -1;
-        String cheapestCT = "";
-        for(CarRentalCompany crc: rentals) {
-            if (crc.getRegions().contains(region)) {
-                for(CarType ct : crc.getAvailableCarTypes(start, end)) {
-                    if (smallestPrice == -1  || ct.getRentalPricePerDay() < smallestPrice) {
-                        smallestPrice = ct.getRentalPricePerDay();
-                        cheapestCT = ct.getName();
-                    }
-                }
-            }
-        }
-//        TypedQuery<Long> query1 =em.createQuery(""
-//            + "SELECT c.type "
-//            + "FROM CareRentalCompany c "
-//            + "fro"
-//            + "WHERE " 
-//            + ":startDate > ALL (SELECT r.endDate FROM Reservation r WHERE r.carId = c.id AND r.endDate <= :endDate) " 
-//            + "AND " 
-//            + ":endDate < ALL (SELECT r.startDate FROM Reservation r WHERE r.carId = c.id AND r.endDate > :endDate) "
-//            + "ORDER BY c.type.price ASC"
-//             
-//                
-//                
-//                , Long.class);
-//        int max = query1.getResultList().get(0).intValue();
-//        List<String> query2 = em.createQuery(""
-//            + "SELECT r.carRenter "
-//            + "FROM CarRentalCompany crc "
-//            + "INNER JOIN crc.cars c "
-//            + "INNER JOIN c.reservations r "
-//            + "GROUP BY r.carRenter "
-//            + "HAVING COUNT(r) = :max_val")
-//            .setParameter("max_val", max)
-//            .getResultList();
-        return cheapestCT;
+        List<CarType> carTypesByPrice = em.createQuery(""
+            + "SELECT c.type " 
+            + "FROM CarRentalCompany crc " 
+            + "INNER JOIN crc.cars c "    
+            + "INNER JOIN crc.regions r "
+            + "WHERE " 
+            + "r = :region AND "
+            + ":startDate > ALL (SELECT r.endDate FROM Reservation r WHERE r.carId = c.id AND r.endDate <= :endDate) " //?
+            + "AND " 
+            + ":endDate < ALL (SELECT r.startDate FROM Reservation r WHERE r.carId = c.id AND r.endDate > :endDate) " //?
+            + "ORDER BY c.type.rentalPricePerDay ASC",
+            CarType.class)
+            .setParameter("startDate", start)
+            .setParameter("endDate", end)
+            .setParameter("region", region)
+            .getResultList();
+        return carTypesByPrice.get(0).getName();
     }
 }

@@ -109,6 +109,13 @@ public class CarRentalCompany implements Serializable {
      * CARS *
      *********/
     
+    public void addNewCar(CarType carType, int nrOfCars) {
+        carTypes.add(carType);
+        for(int i = 0; i < nrOfCars; i++) {
+            cars.add(new Car(carType));
+        }
+    }
+    
     public Car getCar(int uid) {
         for (Car car : cars) {
             if (car.getId() == uid) {

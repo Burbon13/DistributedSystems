@@ -1,5 +1,6 @@
 package client;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -93,25 +94,47 @@ public class Main extends AbstractTestManagement<ReservationSessionRemote, Manag
         return ms.getNumberOfReservations(carRentalName, carType);
     }
     
+    // =============== LOADING THE COMPANY ===============
+    
     private Main loadCarRentalCompanies() throws Exception {
-        LOG.log(Level.INFO, "Sending companies data from files to the server");
+        LOG.info("Loading companies");
+     
+        List<String> inFiles = new ArrayList<>();
+        inFiles.add("hertz.csv");
+        inFiles.add("dockx.csv");
+        List<RentalLoader.CrcData> companies = RentalLoader.loadCompanies(inFiles);
+        
         ManagerSessionRemote managerSession = getNewManagerSession("LoadingManager");
-        managerSession.loadCarRentalCompanies();
+        //managerSession.loadCarRentalCompanies();
+        
+        for(RentalLoader.CrcData company: companies) {
+            LOG.log(Level.INFO, "Sending company {0}", company.name);
+            managerSession.initializeNewCarRentalCompany(company.name, company.regions);
+            company.nrOfCars.forEach((carType, nrOfCars) -> {
+                LOG.log(Level.INFO, "Loading <{0}> of type <{1}>", new Object[]{nrOfCars, carType});
+                try {
+                    managerSession.insertNewCar(company.name, carType, nrOfCars);
+                } catch (Exception ex) {
+                    LOG.log(Level.SEVERE, "Could not insert new cars: {0}", ex.getMessage());
+                }
+            });
+        }
+        
         LOG.info("Loaded car rental companies!");
         return this;
     }
     
     // =============== TESTING PURPOSES FOR RMI ERRORS ===============
     
-    private void testConnection() throws Exception {
-        LOG.info("TESTING CONNECTION FOR SERIALIZATION ISSUES");
+    private Main testConnection() throws Exception {
+        LOG.info("========= TESTING CONNECTION FOR SERIALIZATION ISSUES (\"=========");
         ReservationSessionRemote session = getNewReservationSession("razvan");
         LOG.info("Retrieved ReservationSession");
         session.reveiveA(new A("A-FROM-CLIENT"));
         A a = session.sendA("A-FROM-SERVER");
         LOG.log(Level.INFO, "Received A {0}", a.getName());
         try {
-            Set<A> setA = new HashSet<>();
+            HashSet<A> setA = new HashSet<>();
             setA.add(new A("a1"));
             setA.add(new A("a2"));
             setA.add(new A("a3"));
@@ -138,5 +161,7 @@ public class Main extends AbstractTestManagement<ReservationSessionRemote, Manag
         } catch(Exception e) {
            LOG.info("COULD NOT RECEIVE set<A>");
         }
+        LOG.info("========= END TESTING CONNECTION FOR SERIALIZATION END =========");
+        return this;
     }
 }

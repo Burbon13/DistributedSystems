@@ -1,5 +1,6 @@
 package session;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,7 +26,23 @@ public class ManagerSession implements ManagerSessionRemote {
     @PersistenceContext
     EntityManager em;
     
-    // TODO: Add param after solving issue
+    @Override
+    public void initializeNewCarRentalCompany(String name, List<String> regions) throws Exception {
+        LOG.log(Level.INFO, "Initializing new car rental company name=<{0}> with nr. of regions=<{1}>", new Object[]{name, regions.size()});
+        CarRentalCompany newCompany = new CarRentalCompany(name, regions, new ArrayList<>());
+        em.persist(newCompany);
+    }
+
+    @Override
+    public void insertNewCar(String companyName, CarType carType, int nrOfCars) throws Exception {
+        LOG.log(Level.INFO, "Inserting new car <{0}> in company <{1}>", new Object[]{carType, companyName});
+        CarRentalCompany carRentalCompany = em.find(CarRentalCompany.class, companyName);
+        carRentalCompany.addNewCar(carType, nrOfCars);
+        //em.persist(this);
+    }
+    
+    // IN SERVER MEMORY CAR RENTAL COMPANIES LOADING
+    // TODO: Commend 
     @Override
     @RolesAllowed("carManager")
     public void loadCarRentalCompanies(/*List<CarRentalCompany> companies*/) throws Exception{
@@ -100,7 +117,7 @@ public class ManagerSession implements ManagerSessionRemote {
     @RolesAllowed("carManager")
     public Set<String> getBestClients() throws Exception{
         LOG.log(Level.INFO, "Retrieving best clients!");
-         TypedQuery<Long> query1 =em.createQuery(""
+        TypedQuery<Long> query1 =em.createQuery(""
             + "SELECT COUNT(r) "
             + "FROM CarRentalCompany crc "
             + "INNER JOIN crc.cars c "

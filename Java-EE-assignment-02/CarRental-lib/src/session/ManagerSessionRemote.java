@@ -1,11 +1,16 @@
 package session;
 
+import java.util.List;
 import java.util.Set;
 import javax.ejb.Remote;
 import rental.CarType;
 
 @Remote
 public interface ManagerSessionRemote {
+    
+    public void initializeNewCarRentalCompany(String name, List<String> regions) throws Exception;
+    
+    public void insertNewCar(String companyName, CarType carType, int nrOfCars) throws Exception;
     
     public Set<CarType> getCarTypes(String company) throws Exception;
     

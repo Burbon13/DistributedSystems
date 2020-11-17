@@ -164,6 +164,29 @@ public class ReservationSession implements ReservationSessionRemote {
                 }
             }
         }
+//        TypedQuery<Long> query1 =em.createQuery(""
+//            + "SELECT c.type "
+//            + "FROM CareRentalCompany c "
+//            + "fro"
+//            + "WHERE " 
+//            + ":startDate > ALL (SELECT r.endDate FROM Reservation r WHERE r.carId = c.id AND r.endDate <= :endDate) " 
+//            + "AND " 
+//            + ":endDate < ALL (SELECT r.startDate FROM Reservation r WHERE r.carId = c.id AND r.endDate > :endDate) "
+//            + "ORDER BY c.type.price ASC"
+//             
+//                
+//                
+//                , Long.class);
+//        int max = query1.getResultList().get(0).intValue();
+//        List<String> query2 = em.createQuery(""
+//            + "SELECT r.carRenter "
+//            + "FROM CarRentalCompany crc "
+//            + "INNER JOIN crc.cars c "
+//            + "INNER JOIN c.reservations r "
+//            + "GROUP BY r.carRenter "
+//            + "HAVING COUNT(r) = :max_val")
+//            .setParameter("max_val", max)
+//            .getResultList();
         return cheapestCT;
     }
     
@@ -181,7 +204,7 @@ public class ReservationSession implements ReservationSessionRemote {
     }
 
     @Override
-    public void receiveSetOfA(Set<A> setA) throws Exception {
+    public void receiveSetOfA(HashSet<A> setA) throws Exception {
         LOG.log(Level.INFO, "Received set of A of size {0}", setA.size());
         setA.forEach((a) -> {
             LOG.info(a.getName());

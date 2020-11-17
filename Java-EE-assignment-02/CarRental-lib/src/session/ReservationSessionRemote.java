@@ -1,6 +1,7 @@
 package session;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.ejb.Remote;
@@ -34,7 +35,7 @@ public interface ReservationSessionRemote {
     
     public void reveiveA(A a) throws Exception;
     
-    public void receiveSetOfA(Set<A> setA) throws Exception;
+    public void receiveSetOfA(HashSet<A> setA) throws Exception;
     
     public A sendA(String name) throws Exception;
     

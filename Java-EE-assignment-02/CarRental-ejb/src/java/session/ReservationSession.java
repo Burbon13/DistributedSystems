@@ -61,6 +61,10 @@ public class ReservationSession implements ReservationSessionRemote {
 
     @Override
     public Quote createQuote(String name, ReservationConstraints constraints) throws ReservationException, Exception {
+        if(ManagerSession.isLoading()) {
+            throw new ReservationException("Unable to create quote - companies are loading"); 
+        }
+        
         List<CarRentalCompany> companies = em.createQuery("SELECT crc FROM CarRentalCompany crc", CarRentalCompany.class).getResultList();
         for(CarRentalCompany company: companies) {
             try {
@@ -85,6 +89,9 @@ public class ReservationSession implements ReservationSessionRemote {
 
     @Override
     public List<Reservation> confirmQuotes() throws ReservationException , Exception{
+        if(ManagerSession.isLoading()) {
+            throw new ReservationException("Unable to create quote - companies are loading"); 
+        }
         LOG.log(Level.INFO, "Confirming quotes");
         List<Reservation> done = new LinkedList<>();
         try {

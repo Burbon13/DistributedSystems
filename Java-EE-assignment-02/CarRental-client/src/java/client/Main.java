@@ -104,7 +104,9 @@ public class Main extends AbstractTestManagement<ReservationSessionRemote, Manag
         
         ManagerSessionRemote managerSession = getNewManagerSession("LoadingManager");
         
-        for(RentalLoader.CrcData company: companies) {
+        managerSession.setLoadingInProgress(true);
+        try {
+            for(RentalLoader.CrcData company: companies) {
             LOG.log(Level.INFO, "Sending company {0}", company.name);
             managerSession.initializeNewCarRentalCompany(company.name, company.regions);
             company.nrOfCars.forEach((carType, nrOfCars) -> {
@@ -114,7 +116,10 @@ public class Main extends AbstractTestManagement<ReservationSessionRemote, Manag
                 } catch (Exception ex) {
                     LOG.log(Level.SEVERE, "Could not insert new cars: {0}", ex.getMessage());
                 }
-            });
+                });
+            }
+        }finally {
+            managerSession.setLoadingInProgress(false);
         }
         
         LOG.info("Loaded car rental companies!");

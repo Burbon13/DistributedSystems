@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.security.DeclareRoles;
@@ -21,8 +22,20 @@ public class ManagerSession implements ManagerSessionRemote {
     
     private static final Logger LOG = Logger.getLogger(ManagerSession.class.getName());
     
+    private final static AtomicBoolean LOAD_IN_PROCESS = new AtomicBoolean(false);
+    
+    public static boolean isLoading() {
+        return LOAD_IN_PROCESS.get();
+    }
+    
     @PersistenceContext
     EntityManager em;
+    
+    @Override
+    public void setLoadingInProgress(boolean inProgress) throws Exception {
+        LOG.log(Level.INFO, "Setting loading boolean to {0}", inProgress);
+        LOAD_IN_PROCESS.set(inProgress);
+    }
     
     @Override
     @RolesAllowed("carManager")

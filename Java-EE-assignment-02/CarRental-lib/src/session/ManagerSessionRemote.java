@@ -8,6 +8,8 @@ import rental.CarType;
 @Remote
 public interface ManagerSessionRemote {
     
+    public void setLoadingInProgress(boolean inProgress) throws Exception;
+    
     public void initializeNewCarRentalCompany(String name, List<String> regions) throws Exception;
     
     public void insertNewCar(String companyName, CarType carType, int nrOfCars) throws Exception;

@@ -44,11 +44,11 @@ public class ManagerSession implements ManagerSessionRemote {
     @RolesAllowed("carManager")
     public Set<CarType> getCarTypes(String company) throws Exception{
         LOG.log(Level.INFO, "Retrieving car types for company {0}", company);
-        // TODO
         List<CarType> results = em.createQuery(""
-                + "SELECT ct.name "
+                + "SELECT t.name "
                 + "FROM CarRentalCompany crc "
-                + "INNER JOIN crc.carTypes ct "
+                + "INNER JOIN crc.cars c "
+                + "INNER JOIN c.type t "
                 + "WHERE crc.name = :companyName")
                 .setParameter("companyName", company)
                 .getResultList();
@@ -70,17 +70,18 @@ public class ManagerSession implements ManagerSessionRemote {
         return new HashSet<>(results);
     }
 
-    /* TODO: Decide if to implement or remove
     @Override
     @RolesAllowed("carManager")
-    public int getNumberOfReservations(String company, String type, int id) {
-        List<Integer> results = em.createQuery("SELECT COUNT(r) FROM Car car, Company c WHERE c.name = :companyName AND c.id = :carId")
-                .setParameter("carId", id)
-                .setParameter("companyName", company)
-                .getResultList();
-        return results.get(0);
+    public int getNumberOfReservations(int id) {
+        LOG.log(Level.INFO, "Getting number of reservations car id {0}", id);
+        TypedQuery<Long> query = em.createQuery(""
+                + "SELECT COUNT(r) "
+                + "FROM Car c "
+                + "INNER JOIN c.reservations r "
+                + "WHERE c.id = :carId", Long.class)
+                .setParameter("carId", id);
+        return query.getSingleResult().intValue();
     }
-    */
 
     @Override
     @RolesAllowed("carManager")

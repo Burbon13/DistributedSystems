@@ -16,8 +16,7 @@ public interface ManagerSessionRemote {
     
     public Set<Integer> getCarIds(String company,String type) throws Exception;
     
-    // TODO: Decide if to implement or remove
-    // public int getNumberOfReservations(String company, String type, int carId);
+     public int getNumberOfReservations(int carId);
     
     public int getNumberOfReservations(String company, String type) throws Exception;
     

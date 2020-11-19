@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ejb.EJB;
 import javax.naming.InitialContext;
 import rental.CarType;
 import rental.Reservation;
@@ -16,6 +17,9 @@ import session.ReservationSessionRemote;
 public class Main extends AbstractTestManagement<ReservationSessionRemote, ManagerSessionRemote> {
     
     private static final Logger LOG = Logger.getLogger(Main.class.getName());
+    
+    @EJB
+    static ManagerSessionRemote managerSession;
 
     public Main(String scriptFile) {
         super(scriptFile);
@@ -55,8 +59,7 @@ public class Main extends AbstractTestManagement<ReservationSessionRemote, Manag
     @Override
     protected ManagerSessionRemote getNewManagerSession(String name) throws Exception {
         LOG.log(Level.INFO, "[MANAGER] Retrieving SESSION");
-        InitialContext context = new InitialContext();
-        return (ManagerSessionRemote) context.lookup(ManagerSessionRemote.class.getName());
+        return managerSession;
     }
 
     @Override
@@ -101,9 +104,7 @@ public class Main extends AbstractTestManagement<ReservationSessionRemote, Manag
         inFiles.add("hertz.csv");
         inFiles.add("dockx.csv");
         List<RentalLoader.CrcData> companies = RentalLoader.loadCompanies(inFiles);
-        
-        ManagerSessionRemote managerSession = getNewManagerSession("LoadingManager");
-        
+                
         managerSession.setLoadingInProgress(true);
         try {
             for(RentalLoader.CrcData company: companies) {

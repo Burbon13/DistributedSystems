@@ -58,6 +58,18 @@ public class CarRentalModel {
     			.build();
     	datastore.put(carTypeEntity);
     }
+    
+    public void loadCar(String companyName, String carType, int carId) {
+    	Key carKey = datastore
+    			.newKeyFactory() 
+    			.addAncestors(PathElement.of("CarRentalCompany", companyName), PathElement.of("CarType", carType)) 
+    			.setKind("Car")
+    			.newKey(carId);
+    	Entity carEntity = Entity.newBuilder(carKey)
+    			.set("id", carId)
+    			.build();
+    	datastore.put(carEntity);
+    }
 
     /**
      * Get the car types available in the given car rental company.

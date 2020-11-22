@@ -58,6 +58,7 @@ public class CarRentalModel {
     			.set("name", carType.getName())
     			.set("numberOfSeats", carType.getNbOfSeats())
     			.set("trunkSpace", carType.getTrunkSpace())
+    			.set("rentalPricePerDay", carType.getRentalPricePerDay())
     			.set("smokingAllowed", carType.isSmokingAllowed())
     			.build();
     	datastore.put(carTypeEntity);
@@ -192,10 +193,30 @@ public class CarRentalModel {
      * @return The list of car types in the given car rental company.
      */
     public Collection<CarType> getCarTypesOfCarRentalCompany(String companyName) {
-        // FIXME: use persistence instead
-        CarRentalCompany crc = CRCS.get(companyName);
-        Collection<CarType> out = new ArrayList<>(crc.getAllCarTypes());
-        return out;
+    	Query<Entity> query = Query.newEntityQueryBuilder()
+    		    .setKind("CarType")
+    		    .setFilter(
+    		    		PropertyFilter.hasAncestor(
+    		    				datastore
+    		    				.newKeyFactory()
+    		    				.setKind("CarRentalCompany")
+    		    				.newKey(companyName)
+    		    				)
+    		    )
+    		    .build();
+    	QueryResults<Entity> carTypes = datastore.run(query);
+    	Set<CarType> carTypesSet = new HashSet<>();
+    	while (carTypes.hasNext()) {
+    		  Entity carType = carTypes.next();
+    		  carTypesSet.add(new CarType(
+    				  carType.getString("name"),
+    				  (int)carType.getLong("numberOfSeats"),
+    				  (float)carType.getDouble("trunkSpace"),
+    				  carType.getDouble("rentalPricePerDay"),
+    				  carType.getBoolean("smokingAllowed")
+    				 ));
+    		}
+        return carTypesSet;
     }
 
     /**

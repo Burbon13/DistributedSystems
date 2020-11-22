@@ -16,6 +16,7 @@ import com.google.cloud.datastore.PathElement;
 import com.google.cloud.datastore.ProjectionEntity;
 import com.google.cloud.datastore.Query;
 import com.google.cloud.datastore.QueryResults;
+import com.google.cloud.datastore.StructuredQuery.PropertyFilter;
 
 import ds.gae.entities.Car;
 import ds.gae.entities.CarRentalCompany;
@@ -82,8 +83,24 @@ public class CarRentalModel {
      * car rental company.
      */
     public Set<String> getCarTypesNames(String companyName) {
-        // FIXME add implementation
-        return new HashSet<>();
+    	Query<Entity> query = Query.newEntityQueryBuilder()
+    		    .setKind("CarType")
+    		    .setFilter(
+    		    		PropertyFilter.hasAncestor(
+    		    				datastore
+    		    				.newKeyFactory()
+    		    				.setKind("CarRentalCompany")
+    		    				.newKey(companyName)
+    		    				)
+    		    )
+    		    .build();
+    	QueryResults<Entity> carTypes = datastore.run(query);
+    	Set<String> carTypesSet = new HashSet<>();
+    	while (carTypes.hasNext()) {
+    		  Entity carType = carTypes.next();
+    		  carTypesSet.add(carType.getString("name"));
+    		}
+        return carTypesSet;
     }
 
     /**

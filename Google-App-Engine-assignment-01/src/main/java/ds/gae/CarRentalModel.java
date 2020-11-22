@@ -8,6 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.cloud.datastore.Datastore;
+import com.google.cloud.datastore.DatastoreOptions;
+import com.google.cloud.datastore.Entity;
+import com.google.cloud.datastore.Key;
+import com.google.cloud.datastore.PathElement;
+
 import ds.gae.entities.Car;
 import ds.gae.entities.CarRentalCompany;
 import ds.gae.entities.CarType;
@@ -19,6 +25,7 @@ public class CarRentalModel {
 
     // FIXME use persistence instead
     public Map<String, CarRentalCompany> CRCS = new HashMap<>();
+    Datastore datastore = DatastoreOptions.getDefaultInstance().getService();
 
     private static CarRentalModel instance;
 
@@ -27,6 +34,29 @@ public class CarRentalModel {
             instance = new CarRentalModel();
         }
         return instance;
+    }
+    
+    public void loadCarRentalCompany(String companyName) {
+    	Key crcKey = datastore.newKeyFactory().setKind("CarRentalCompany") .newKey(companyName);
+    	Entity crc = Entity.newBuilder(crcKey)
+    			.set("name", companyName)
+    			.build();
+    	datastore.put(crc);
+    }
+    
+    public void loadCarType(String companyName, CarType carType) {
+    	Key carTypeKey = datastore
+    			.newKeyFactory() 
+    			.addAncestors(PathElement.of("CarRentalCompany", companyName)) 
+    			.setKind("CarType")
+    			.newKey(carType.getName());
+    	Entity carTypeEntity = Entity.newBuilder(carTypeKey)
+    			.set("name", carType.getName())
+    			.set("numberOfSeats", carType.getNbOfSeats())
+    			.set("trunkSpace", carType.getTrunkSpace())
+    			.set("smokingAllowed", carType.isSmokingAllowed())
+    			.build();
+    	datastore.put(carTypeEntity);
     }
 
     /**

@@ -49,7 +49,9 @@ public class CarRentalServletContextListener implements ServletContextListener {
             Set<Car> cars = loadData(name, datafile);
             CarRentalCompany company = new CarRentalCompany(name, cars);
             // FIXME: use persistence instead
-            CarRentalModel.get().CRCS.put(name, company);
+            // CarRentalModel.get().CRCS.put(name, company);
+            // Persist
+            CarRentalModel.get().loadCarRentalCompany(name);
         } catch (NumberFormatException ex) {
             Logger.getLogger(CarRentalServletContextListener.class.getName()).log(Level.SEVERE, "bad file", ex);
         } catch (IOException ex) {
@@ -78,6 +80,7 @@ public class CarRentalServletContextListener implements ServletContextListener {
             CarType type = new CarType(csvReader.nextToken(), Integer.parseInt(csvReader.nextToken()),
                     Float.parseFloat(csvReader.nextToken()), Double.parseDouble(csvReader.nextToken()),
                     Boolean.parseBoolean(csvReader.nextToken()));
+            CarRentalModel.get().loadCarType(name, type);
             // create N new cars with given type, where N is the 5th field
             for (int i = Integer.parseInt(csvReader.nextToken()); i > 0; i--) {
                 cars.add(new Car(carId++, type));

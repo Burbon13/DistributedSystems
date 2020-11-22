@@ -13,6 +13,9 @@ import com.google.cloud.datastore.DatastoreOptions;
 import com.google.cloud.datastore.Entity;
 import com.google.cloud.datastore.Key;
 import com.google.cloud.datastore.PathElement;
+import com.google.cloud.datastore.ProjectionEntity;
+import com.google.cloud.datastore.Query;
+import com.google.cloud.datastore.QueryResults;
 
 import ds.gae.entities.Car;
 import ds.gae.entities.CarRentalCompany;
@@ -89,8 +92,16 @@ public class CarRentalModel {
      * @return the list of car rental companies
      */
     public Collection<String> getAllRentalCompanyNames() {
-        // FIXME use persistence instead
-        return CRCS.keySet();
+    	Query<Entity> query = Query.newEntityQueryBuilder()
+    		    .setKind("CarRentalCompany")
+    		    .build();
+    	QueryResults<Entity> carRentalCompanies = datastore.run(query);
+    	Collection<String> companyCollection = new HashSet<>();
+    	while (carRentalCompanies.hasNext()) {
+    		  Entity company = carRentalCompanies.next();
+    		  companyCollection.add(company.getString("name"));
+    		}
+        return companyCollection;
     }
 
     /**

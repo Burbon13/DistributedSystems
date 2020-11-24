@@ -16,6 +16,7 @@ import com.google.cloud.datastore.PathElement;
 import com.google.cloud.datastore.ProjectionEntity;
 import com.google.cloud.datastore.Query;
 import com.google.cloud.datastore.QueryResults;
+import com.google.cloud.datastore.StructuredQuery.CompositeFilter;
 import com.google.cloud.datastore.StructuredQuery.PropertyFilter;
 
 import ds.gae.entities.Car;
@@ -136,8 +137,9 @@ public class CarRentalModel {
     public Quote createQuote(String companyName, String renterName, ReservationConstraints constraints)
             throws ReservationException {
         // FIXME: use persistence instead
-        CarRentalCompany crc = CRCS.get(companyName);
-        return crc.createQuote(constraints, renterName);
+        //CarRentalCompany crc = CRCS.get(companyName);
+        //return crc.createQuote(constraints, renterName);
+    	return null;
     }
 
     /**
@@ -148,8 +150,8 @@ public class CarRentalModel {
      */
     public void confirmQuote(Quote quote) throws ReservationException {
         // FIXME: use persistence instead
-        CarRentalCompany crc = CRCS.get(quote.getRentalCompany());
-        crc.confirmQuote(quote);
+        //CarRentalCompany crc = CRCS.get(quote.getRentalCompany());
+        // crc.confirmQuote(quote);
     }
 
     /**
@@ -228,9 +230,23 @@ public class CarRentalModel {
      */
     public Collection<Integer> getCarIdsByCarType(String companyName, CarType carType) {
         Collection<Integer> out = new ArrayList<>();
-        for (Car c : getCarsByCarType(companyName, carType)) {
-            out.add(c.getId());
-        }
+        Query<Entity> query = Query.newEntityQueryBuilder()
+    		    .setKind("Car")
+    		    .setFilter(
+    		    		PropertyFilter.hasAncestor(
+    	    		    		datastore
+    	    		    			.newKeyFactory()
+    	    		    			.addAncestors(PathElement.of("CarRentalCompany", companyName)) 
+    	    		    			.setKind("CarType")
+    	    		    			.newKey(carType.getName())
+    	    		    	)		
+    		    )
+    		    .build();
+    	QueryResults<Entity> cars = datastore.run(query);
+    	while (cars.hasNext()) {
+    		  Entity car = cars.next();
+    		  out.add((int)car.getLong("id"));
+    		}
         return out;
     }
 

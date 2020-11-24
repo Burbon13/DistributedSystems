@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.cloud.datastore.Datastore;
@@ -22,6 +23,7 @@ import com.google.cloud.datastore.PathElement;
 import com.google.cloud.datastore.Query;
 import com.google.cloud.datastore.QueryResults;
 import com.google.cloud.datastore.StructuredQuery.PropertyFilter;
+import com.google.cloud.datastore.Transaction;
 
 import ds.gae.entities.Car;
 import ds.gae.entities.CarRentalCompany;
@@ -207,8 +209,61 @@ public class CarRentalModel {
      *                              none of the given quotes is confirmed.
      */
     public List<Reservation> confirmQuotes(List<Quote> quotes) throws ReservationException {
-        // TODO: add implementation when time left, required for GAE2
-        return null;
+    	Transaction tx = datastore.newTransaction(); 
+    	List<Reservation> out = new ArrayList<>();
+    	try {
+            
+    		for(int i = 0; i < quotes.size(); i ++) {
+    			Quote quote = quotes.get(i);
+    			String companyName = quote.getRentalCompany();
+    	    	String carType = quote.getCarType();
+    	    	List<Car> cars = getCarsByCarType(companyName, carType);
+    	        CarType desiredCarType = getCarType(companyName, carType);
+    	        cars.forEach(car -> {
+    	        	List<Reservation> reservations = getReservationsOfCar(companyName, car.getId());
+    	        	reservations.forEach(r -> car.addReservation(r));
+    	        	car.setCarType(desiredCarType);
+    	        });
+    	        CarRentalCompany crc = new CarRentalCompany(quote.getRentalCompany(), new HashSet<>(cars));
+    	    	logger.info(crc.toString());
+    	        Reservation r = crc.confirmQuote(quote);
+    	        
+    	        KeyFactory keyFactory = datastore.newKeyFactory() 
+    	    			.addAncestors(
+    	    					PathElement.of("CarRentalCompany", companyName),
+    	    					PathElement.of("CarType", r.getCarType()),
+    	    					PathElement.of("Car", r.getCarId())
+    	    			) 
+    	    			.setKind("Reservation");
+    	        
+    	        Key reservationKey = datastore.allocateId(keyFactory.newKey());
+    	        
+    	        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");  
+    	        String startDate = dateFormat.format(r.getStartDate());  
+    	        String endDate = dateFormat.format(r.getEndDate());
+    	        		
+    	        Entity reservationEntity = Entity.newBuilder(reservationKey)
+    	    			.set("carId", r.getCarId())
+    	    			.set("renter", r.getRenter())
+    	    			.set("startDate", startDate)
+    	    			.set("endDate", endDate)
+    	    			.set("rentalCompany", r.getRentalCompany())
+    	    			.set("carType", r.getCarType())
+    	    			.set("rentalPrice", r.getRentalPrice())
+    	    			.build();
+    	        tx.put(reservationEntity);
+    	        out.add(r);
+    		}
+    		tx.commit();
+    	} catch (ReservationException e) {
+    		
+    	} finally {
+    		if (tx.isActive()) {
+    			tx.rollback();
+    		} 
+    	}
+    	
+        return out;
     }
 
     /**
@@ -218,17 +273,43 @@ public class CarRentalModel {
      * @return the list of reservations of the given car renter
      */
     public List<Reservation> getReservations(String renter) {
-        // FIXME: use persistence instead
         List<Reservation> out = new ArrayList<>();
-//        for (CarRentalCompany crc : CRCS.values()) {
-//            for (Car c : crc.getCars()) {
-//                for (Reservation r : c.getReservations()) {
-//                    if (r.getRenter().equals(renter)) {
-//                        out.add(r);
-//                    }
-//                }
-//            }
-//        }
+        
+        Query<Entity> query = Query.newEntityQueryBuilder()
+    		    .setKind("Reservation")
+    		    .setFilter(PropertyFilter.eq("renter", renter))
+    		    .build();
+        
+        QueryResults<Entity> reservations = datastore.run(query);
+        
+        while (reservations.hasNext()) {
+  		  	Entity r = reservations.next();
+  		  	
+  		  	try {
+  		  		int carId = (int)r.getLong("carId");
+  		  		String startDateString = r.getString("startDate");
+  		  		String endDateString = r.getString("endDate");
+  		  		String rentalCompany  = r.getString("rentalCompany");
+  		  		String carType  = r.getString("carType");
+  		  		double price = r.getDouble("rentalPrice");
+			
+  		  		Date startDate = new SimpleDateFormat("dd/MM/yyyy").parse(startDateString);
+  		  		Date endDate = new SimpleDateFormat("dd/MM/yyyy").parse(endDateString);
+  		  		
+  		  		out.add(new Reservation(
+  		  				carId,
+  		  				renter,
+  		  				startDate,
+  		  				endDate,
+  		  				rentalCompany,
+  		  				carType,
+  		  				price
+  		  				));
+  		  	} catch(ParseException e) {
+  		  		logger.log(Level.SEVERE, "Could not parse date for reservations");
+  		  	}
+  		}
+        
         return out;
     }
 

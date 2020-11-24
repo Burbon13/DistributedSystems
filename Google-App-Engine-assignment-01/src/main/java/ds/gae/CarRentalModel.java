@@ -1,5 +1,6 @@
 package ds.gae;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import com.google.cloud.datastore.Datastore;
 import com.google.cloud.datastore.DatastoreOptions;
 import com.google.cloud.datastore.Entity;
 import com.google.cloud.datastore.Key;
+import com.google.cloud.datastore.KeyFactory;
 import com.google.cloud.datastore.PathElement;
 import com.google.cloud.datastore.Query;
 import com.google.cloud.datastore.QueryResults;
@@ -157,9 +159,43 @@ public class CarRentalModel {
      * @throws ReservationException Confirmation of given quote failed.
      */
     public void confirmQuote(Quote quote) throws ReservationException {
-        // FIXME: use persistence instead
-        //CarRentalCompany crc = CRCS.get(quote.getRentalCompany());
-        // crc.confirmQuote(quote);
+    	String companyName = quote.getRentalCompany();
+    	String carType = quote.getCarType();
+    	List<Car> cars = getCarsByCarType(companyName, carType);
+        CarType desiredCarType = getCarType(companyName, carType);
+        cars.forEach(car -> {
+        	List<Reservation> reservations = getReservationsOfCar(companyName, car.getId());
+        	reservations.forEach(r -> car.addReservation(r));
+        	car.setCarType(desiredCarType);
+        });
+        CarRentalCompany crc = new CarRentalCompany(quote.getRentalCompany(), new HashSet<>(cars));
+    	logger.info(crc.toString());
+        Reservation r = crc.confirmQuote(quote);
+        
+        KeyFactory keyFactory = datastore.newKeyFactory() 
+    			.addAncestors(
+    					PathElement.of("CarRentalCompany", companyName),
+    					PathElement.of("CarType", r.getCarType()),
+    					PathElement.of("Car", r.getCarId())
+    			) 
+    			.setKind("Reservation");
+        
+        Key reservationKey = datastore.allocateId(keyFactory.newKey());
+        
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");  
+        String startDate = dateFormat.format(r.getStartDate());  
+        String endDate = dateFormat.format(r.getEndDate());
+        		
+        Entity reservationEntity = Entity.newBuilder(reservationKey)
+    			.set("carId", r.getCarId())
+    			.set("renter", r.getRenter())
+    			.set("startDate", startDate)
+    			.set("endDate", endDate)
+    			.set("rentalCompany", r.getRentalCompany())
+    			.set("carType", r.getCarType())
+    			.set("rentalPrice", r.getRentalPrice())
+    			.build();
+    	datastore.put(reservationEntity);
     }
 
     /**
@@ -389,6 +425,11 @@ public class CarRentalModel {
     			.addAncestors(PathElement.of("CarRentalCompany", companyName)) 
     			.setKind("CarType")
     			.newKey(carTypeName));
+    	
+    	if(carTypeEntity == null) {
+    		throw new RuntimeException("No car found " + companyName + "  " + carTypeName);
+    	}
+    	
     	return new CarType(
     			carTypeName,
 				  (int)carTypeEntity.getLong("numberOfSeats"),

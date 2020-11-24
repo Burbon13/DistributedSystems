@@ -28,8 +28,8 @@ public class CarRentalCompany {
     public CarRentalCompany(String name, Set<Car> cars) {
         setName(name);
         this.cars = cars;
-        for(Car car : cars) {
-            carTypes.put(car.getType().getName(), car.getType());
+        for(Car c : cars) {
+            this.carTypes.put(c.getType().getName(), c.getType());
         }
     }
 
@@ -151,5 +151,20 @@ public class CarRentalCompany {
     public void cancelReservation(Reservation res) {
         logger.log(Level.INFO, "<{0}> Cancelling reservation {1}", new Object[] { name, res.toString() });
         getCar(res.getCarId()).removeReservation(res);
+    }
+    
+    public String toString() {
+    	StringBuilder st = new StringBuilder();
+    	
+    	st.append(this.name).append("\n");
+    	this.carTypes.values().forEach(ct -> {
+    		st.append(ct.toString()).append("\n");
+    	});
+    	
+    	this.cars.forEach(c -> {
+    		st.append(c.getId()).append("\n");
+    	});
+    	
+    	return st.toString();
     }
 }

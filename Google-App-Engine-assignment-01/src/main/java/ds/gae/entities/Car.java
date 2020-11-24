@@ -35,6 +35,10 @@ public class Car {
     public CarType getType() {
         return carType;
     }
+    
+    public void setCarType(CarType carType) {
+    	this.carType = carType;
+    }
 
     /****************
      * RESERVATIONS *

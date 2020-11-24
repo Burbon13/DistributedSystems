@@ -32,6 +32,18 @@ public class Reservation extends Quote {
             double rentalPrice) {
         super(renter, start, end, rentalCompany, carType, rentalPrice);
     }
+    
+    public Reservation(
+    		int carId,
+            String renter,
+            Date start,
+            Date end,
+            String rentalCompany,
+            String carType,
+            double rentalPrice) {
+        super(renter, start, end, rentalCompany, carType, rentalPrice);
+        this.carId = carId;
+    }
 
     /******
      * ID *

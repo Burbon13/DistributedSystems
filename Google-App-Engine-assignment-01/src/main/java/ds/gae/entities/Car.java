@@ -14,9 +14,9 @@ public class Car {
      * CONSTRUCTOR *
      ***************/
 
-    public Car(int uid, CarType carType) {
+    public Car(int uid/*, CarType carType*/) {
         this.id = uid;
-        this.carType = carType;
+        //this.carType = carType;
         this.reservations = new HashSet<Reservation>();
     }
 

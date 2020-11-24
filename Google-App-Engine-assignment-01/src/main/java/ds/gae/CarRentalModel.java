@@ -269,15 +269,25 @@ public class CarRentalModel {
      * @return List of cars of the given car type
      */
     private List<Car> getCarsByCarType(String companyName, CarType carType) {
-        // FIXME: use persistence instead
-        List<Car> out = new ArrayList<>();
-        for (CarRentalCompany crc : CRCS.values()) {
-            for (Car c : crc.getCars()) {
-                if (c.getType() == carType) {
-                    out.add(c);
-                }
-            }
-        }
+        Query<Entity> query = Query.newEntityQueryBuilder()
+    		    .setKind("Car")
+    		    .setFilter(
+    		    		PropertyFilter.hasAncestor(
+    	    		    		datastore
+    	    		    			.newKeyFactory()
+    	    		    			.addAncestors(PathElement.of("CarRentalCompany", companyName)) 
+    	    		    			.setKind("CarType")
+    	    		    			.newKey(carType.getName())
+    	    		    	)		
+    		    )
+    		    .build();
+    	QueryResults<Entity> cars = datastore.run(query);
+    	List<Car> out = new ArrayList<>();
+    	while (cars.hasNext()) {
+    		  Entity car = cars.next();
+    		  Car newcar = new Car((int)car.getLong("id"));
+    		  out.add(newcar);
+    		}
         return out;
 
     }

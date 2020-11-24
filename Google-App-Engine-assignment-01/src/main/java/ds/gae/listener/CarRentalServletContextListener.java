@@ -46,11 +46,8 @@ public class CarRentalServletContextListener implements ServletContextListener {
         Logger.getLogger(CarRentalServletContextListener.class.getName()).log(Level.INFO, "loading {0} from file {1}",
                 new Object[] { name, datafile });
         try {
-            Set<Car> cars = loadData(name, datafile);
-            CarRentalCompany company = new CarRentalCompany(name, cars);
+            loadData(name, datafile);
             // FIXME: use persistence instead
-            // CarRentalModel.get().CRCS.put(name, company);
-            // Persist
             CarRentalModel.get().loadCarRentalCompany(name);
         } catch (NumberFormatException ex) {
             Logger.getLogger(CarRentalServletContextListener.class.getName()).log(Level.SEVERE, "bad file", ex);
@@ -59,8 +56,7 @@ public class CarRentalServletContextListener implements ServletContextListener {
         }
     }
 
-    public static Set<Car> loadData(String name, String datafile) throws NumberFormatException, IOException {
-        Set<Car> cars = new HashSet<Car>();
+    public static void loadData(String name, String datafile) throws NumberFormatException, IOException {
         int carId = 1;
 
         // open file from jar
@@ -83,12 +79,9 @@ public class CarRentalServletContextListener implements ServletContextListener {
             CarRentalModel.get().loadCarType(name, type);
             // create N new cars with given type, where N is the 5th field
             for (int i = Integer.parseInt(csvReader.nextToken()); i > 0; i--) {
-                cars.add(new Car(carId++, type));
                 CarRentalModel.get().loadCar(name, type.getName(), carId++);
             }
         }
-
-        return cars;
     }
 
     @Override

@@ -255,8 +255,6 @@ public class CarRentalModel {
     	        out.add(r);
     		}
     		tx.commit();
-    	} catch (ReservationException e) {
-    		
     	} finally {
     		if (tx.isActive()) {
     			tx.rollback();

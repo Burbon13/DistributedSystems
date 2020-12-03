@@ -142,10 +142,13 @@ public class CarRentalModel {
      */
     public Quote createQuote(String companyName, String renterName, ReservationConstraints constraints)
             throws ReservationException {
+    	logger.info("CREATE QUOTE " + companyName + " " + renterName);
         List<Car> cars = getCarsByCarType(companyName, constraints.getCarType());
+        logger.info("Nr. of cars loaded: " + cars.size());
         CarType desiredCarType = getCarType(companyName, constraints.getCarType());
         cars.forEach(car -> {
-        	List<Reservation> reservations = getReservationsOfCar(companyName, car.getId());
+        	List<Reservation> reservations = getReservationsOfCar(companyName, constraints.getCarType(), car.getId());
+        	logger.info("Car " + car.getId() + " has " + reservations.size() + " reservations");
         	reservations.forEach(r -> car.addReservation(r));
         	car.setCarType(desiredCarType);
         });
@@ -166,7 +169,7 @@ public class CarRentalModel {
     	List<Car> cars = getCarsByCarType(companyName, carType);
         CarType desiredCarType = getCarType(companyName, carType);
         cars.forEach(car -> {
-        	List<Reservation> reservations = getReservationsOfCar(companyName, car.getId());
+        	List<Reservation> reservations = getReservationsOfCar(companyName, carType, car.getId());
         	reservations.forEach(r -> car.addReservation(r));
         	car.setCarType(desiredCarType);
         });
@@ -220,7 +223,7 @@ public class CarRentalModel {
     	    	List<Car> cars = getCarsByCarType(companyName, carType);
     	        CarType desiredCarType = getCarType(companyName, carType);
     	        cars.forEach(car -> {
-    	        	List<Reservation> reservations = getReservationsOfCar(companyName, car.getId());
+    	        	List<Reservation> reservations = getReservationsOfCar(companyName, carType, car.getId());
     	        	reservations.forEach(r -> car.addReservation(r));
     	        	car.setCarType(desiredCarType);
     	        });
@@ -458,14 +461,14 @@ public class CarRentalModel {
         return this.getReservations(renter).size() > 0;
     }
     
-    public List<Reservation> getReservationsOfCar(String companyName, int carId) {
+    public List<Reservation> getReservationsOfCar(String companyName, String carType, int carId) {
     	Query<Entity> query = Query.newEntityQueryBuilder()
     		    .setKind("Reservation")
     		    .setFilter(
     		    		PropertyFilter.hasAncestor(
     	    		    		datastore
     	    		    			.newKeyFactory()
-    	    		    			.addAncestors(PathElement.of("CarRentalCompany", companyName)) 
+    	    		    			.addAncestors(PathElement.of("CarRentalCompany", companyName), PathElement.of("CarType", carType)) 
     	    		    			.setKind("Car")
     	    		    			.newKey(carId)
     	    		    	)		
@@ -483,10 +486,10 @@ public class CarRentalModel {
 	    		String stringEndDate = r.getString("endDate");
 	     		Date endDate =new SimpleDateFormat("dd/MM/yyyy").parse(stringEndDate);
 	     		String company = r.getString("rentalCompany");
-	     		String carType = r.getString("carType");
+	     		String ccarType = r.getString("carType");
 	     		double rentalPrice = r.getDouble("rentalPrice");
 	     		  
-	     		Reservation reservation = new Reservation(carId, renter, startDate, endDate, company, carType, rentalPrice);
+	     		Reservation reservation = new Reservation(carId, renter, startDate, endDate, company, ccarType, rentalPrice);
 	     		out.add(reservation);
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block

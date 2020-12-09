@@ -13,6 +13,7 @@
     <div class="group">
         <div class="form">
             <span><%= (String)session.getAttribute("errorMsg") %></span>
+            <span><%= "An email was sent with details!" %></span>
         </div>
     </div>
 </div>

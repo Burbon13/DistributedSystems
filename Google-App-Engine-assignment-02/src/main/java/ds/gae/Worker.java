@@ -24,14 +24,24 @@ public class Worker extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
     	String email = req.getParameter("email");
-    	logger.info("Sending email to " + email);
+    	String state = req.getParameter("state");
+    	logger.info("Sending email to " + email + " with status " + state);
     	
     	Session session = Session.getDefaultInstance(new Properties(), null); 
     		Message msg = new MimeMessage(session);
     		try {
 				msg.setFrom(new InternetAddress("admin@todoapp.appspotemail.com", "Todo App"));
-				msg.addRecipient(Message.RecipientType.TO, new InternetAddress(email, "")); msg.setSubject("Confirmed quotes!"); msg.setText("Your quotes"); 
+				msg.addRecipient(Message.RecipientType.TO, new InternetAddress(email, "")); 
+				msg.setSubject("Car reservation"); 
+				if (state.equals("success")) {
+					msg.setText("Your reservations were successfully created! :D"); 
+					logger.info("Sending SUCCESS EMAIL!");
+				} else {
+					msg.setText("Unable to confirm all of your reservations ... :(  Please try again."); 
+					logger.info("Sending FAILURE EMAIL!");
+				}
 				Transport.send(msg);
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();

@@ -262,10 +262,16 @@ public class CarRentalModel {
     		}
     		tx.commit();
     		Queue queue = QueueFactory.getDefaultQueue();
-    		queue.add(TaskOptions.Builder.withUrl("/worker").param("email", email));
+    		queue.add(TaskOptions.Builder.withUrl("/worker")
+    				.param("email", email)
+    				.param("state", "success"));
     	} finally {
     		if (tx.isActive()) {
     			tx.rollback();
+    			Queue queue = QueueFactory.getDefaultQueue();
+        		queue.add(TaskOptions.Builder.withUrl("/worker")
+        				.param("email", email)
+        				.param("state", "failure"));
     		} 
     	}
     	

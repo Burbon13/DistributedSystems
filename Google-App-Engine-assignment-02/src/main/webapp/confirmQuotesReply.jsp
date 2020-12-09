@@ -11,8 +11,7 @@
     <h2>Reply</h2>
     <div class="group">
         <p>
-            TODO: Here you can give some information to client who is currently 
-            logged in as user <%=renter%>.
+            A confirmation email has been sent to <%=renter%>.
         </p>
     </div>
 </div>

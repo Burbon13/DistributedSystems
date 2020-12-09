@@ -14,6 +14,9 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.cloud.datastore.Datastore;
 import com.google.cloud.datastore.DatastoreOptions;
 import com.google.cloud.datastore.Entity;
@@ -211,7 +214,7 @@ public class CarRentalModel {
      * @throws ReservationException One of the quotes cannot be confirmed. Therefore
      *                              none of the given quotes is confirmed.
      */
-    public List<Reservation> confirmQuotes(List<Quote> quotes) throws ReservationException {
+    public List<Reservation> confirmQuotes(List<Quote> quotes, String email) throws ReservationException {
     	Transaction tx = datastore.newTransaction(); 
     	List<Reservation> out = new ArrayList<>();
     	try {
@@ -258,6 +261,8 @@ public class CarRentalModel {
     	        out.add(r);
     		}
     		tx.commit();
+    		Queue queue = QueueFactory.getDefaultQueue();
+    		queue.add(TaskOptions.Builder.withUrl("/worker").param("email", email));
     	} finally {
     		if (tx.isActive()) {
     			tx.rollback();
